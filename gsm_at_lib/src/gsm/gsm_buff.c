@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_buff.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /* --- Buffer unique part starts --- */
 /* Prefix for all buffer functions and typedefs */
 #define BUF_PREF(x)                     gsm_ ## x

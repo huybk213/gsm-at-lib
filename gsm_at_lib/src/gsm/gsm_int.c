@@ -38,6 +38,7 @@
 #include "gsm/gsm_parser.h"
 #include "gsm/gsm_unicode.h"
 #include "system/gsm_ll.h"
+#include "stdafx.h"
 
 #if !__DOXYGEN__
 /**
@@ -579,6 +580,7 @@ gsmi_tcpip_process_data_sent(uint8_t sent) {
  */
 void
 gsmi_process_cipsend_response(gsm_recv_t* rcv, uint8_t* is_ok, uint16_t* is_error) {
+    printf("Func %s\r\n", __func__);
     if (gsm.msg->msg.conn_send.wait_send_ok_err) {
         if (GSM_CHARISNUM(rcv->data[0]) && rcv->data[1] == ',') {
             uint8_t num = GSM_CHARTONUM(rcv->data[0]);
@@ -589,6 +591,7 @@ gsmi_process_cipsend_response(gsm_recv_t* rcv, uint8_t* is_ok, uint16_t* is_erro
                     CONN_SEND_DATA_SEND_EVT(gsm.msg, gsmOK);
                 }
             } else if (!strncmp(&rcv->data[3], "SEND FAIL" CRLF, 9 + CRLF_LEN)) {
+                printf("SEND FAIL\r\n");
                 gsm.msg->msg.conn_send.wait_send_ok_err = 0;
                 *is_error = gsmi_tcpip_process_data_sent(0);/* Data were not sent due to SEND FAIL or command didn't even start */
                 if (*is_error && gsm.msg->msg.conn_send.conn->status.f.active) {
@@ -708,62 +711,81 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 #if GSM_CFG_NETWORK
         } else if (!strncmp(rcv->data, "+PDP: DEACT", 11)) {
             /* PDP has been deactivated */
+            printf("PDP has been deactivated\r\n");
             gsm_network_check_status(NULL, NULL, 0);/* Update status */
 #endif /* GSM_CFG_NETWORK */
 #if GSM_CFG_CONN
         } else if (!strncmp(rcv->data, "+RECEIVE", 8)) {
+            printf("Parse IPD\r\n");
             gsmi_parse_ipd(rcv->data);          /* Parse IPD */
 #endif /* GSM_CFG_CONN */
         } else if (!strncmp(rcv->data, "+CREG", 5)) {   /* Check for +CREG indication */
+            printf("Parse +CREG response\r\n");
             gsmi_parse_creg(rcv->data, GSM_U8(CMD_IS_CUR(GSM_CMD_CREG_GET)));  /* Parse +CREG response */
         } else if (!strncmp(rcv->data, "+CPIN", 5)) {   /* Check for +CPIN indication for SIM */
+            printf("Check for +CPIN indication for SIM\r\n");
             gsmi_parse_cpin(rcv->data, 1 /* !CMD_IS_DEF(GSM_CMD_CPIN_SET) */);  /* Parse +CPIN response */
         } else if (CMD_IS_CUR(GSM_CMD_COPS_GET) && !strncmp(rcv->data, "+COPS", 5)) {
+            printf("Parse current +COPS\r\n");
             gsmi_parse_cops(rcv->data);         /* Parse current +COPS */
 #if GSM_CFG_SMS
         } else if (CMD_IS_CUR(GSM_CMD_CMGS) && !strncmp(rcv->data, "+CMGS", 5)) {
+            printf("Parse +CMGS response\r\n");
             gsmi_parse_cmgs(rcv->data, &gsm.msg->msg.sms_send.pos);  /* Parse +CMGS response */
         } else if (CMD_IS_CUR(GSM_CMD_CMGR) && !strncmp(rcv->data, "+CMGR", 5)) {
+            printf("Parse +CMGR response\r\n");
             if (gsmi_parse_cmgr(rcv->data)) {   /* Parse +CMGR response */
                 gsm.msg->msg.sms_read.read = 2; /* Set read flag and process the data */
             } else {
                 gsm.msg->msg.sms_read.read = 1; /* Read but ignore data */
             }
         } else if (CMD_IS_CUR(GSM_CMD_CMGL) && !strncmp(rcv->data, "+CMGL", 5)) {
+            printf("Parse +CMGL response\r\n");
             if (gsmi_parse_cmgl(rcv->data)) {   /* Parse +CMGL response */
                 gsm.msg->msg.sms_list.read = 2; /* Set read flag and process the data */
             } else {
                 gsm.msg->msg.sms_list.read = 1; /* Read but ignore data */
             }
         } else if (!strncmp(rcv->data, "+CMTI", 5)) {
+            printf("Parse +CMTI response with received SMS\r\n");
             gsmi_parse_cmti(rcv->data, 1);      /* Parse +CMTI response with received SMS */
         } else if (CMD_IS_CUR(GSM_CMD_CPMS_GET_OPT) && !strncmp(rcv->data, "+CPMS", 5)) {
+            printf("Parse +CPMS with SMS memories info 1\r\n");
             gsmi_parse_cpms(rcv->data, 0);      /* Parse +CPMS with SMS memories info */
         } else if (CMD_IS_CUR(GSM_CMD_CPMS_GET) && !strncmp(rcv->data, "+CPMS", 5)) {
+            printf("Parse +CPMS with SMS memories info 2\r\n");
             gsmi_parse_cpms(rcv->data, 1);      /* Parse +CPMS with SMS memories info */
         } else if (CMD_IS_CUR(GSM_CMD_CPMS_SET) && !strncmp(rcv->data, "+CPMS", 5)) {
+            printf("Parse +CPMS with SMS memories info 3\r\n");
             gsmi_parse_cpms(rcv->data, 2);      /* Parse +CPMS with SMS memories info */
 #endif /* GSM_CFG_SMS */
 #if GSM_CFG_CALL
         } else if (!strncmp(rcv->data, "+CLCC", 5)) {
+            printf("Parse +CLCC response with call info change\r\n");
             gsmi_parse_clcc(rcv->data, 1);      /* Parse +CLCC response with call info change */
 #endif /* GSM_CFG_CALL */
 #if GSM_CFG_PHONEBOOK
         } else if (CMD_IS_CUR(GSM_CMD_CPBS_GET_OPT) && !strncmp(rcv->data, "+CPBS", 5)) {
+            printf("Parse +CPBS response\r\n");
             gsmi_parse_cpbs(rcv->data, 0);      /* Parse +CPBS response */
         } else if (CMD_IS_CUR(GSM_CMD_CPBS_GET) && !strncmp(rcv->data, "+CPBS", 5)) {
+            printf("Parse +CPBS response\r\n");
             gsmi_parse_cpbs(rcv->data, 1);      /* Parse +CPBS response */
         } else if (CMD_IS_CUR(GSM_CMD_CPBS_SET) && !strncmp(rcv->data, "+CPBS", 5)) {
+            printf("Parse +CPBS response\r\n");
             gsmi_parse_cpbs(rcv->data, 2);      /* Parse +CPBS response */
         } else if (CMD_IS_CUR(GSM_CMD_CPBR) && !strncmp(rcv->data, "+CPBR", 5)) {
+            printf("Parse +CPBR response\r\n");
             gsmi_parse_cpbr(rcv->data);         /* Parse +CPBR statement */
         } else if (CMD_IS_CUR(GSM_CMD_CPBF) && !strncmp(rcv->data, "+CPBF", 5)) {
+            printf("Parse +CPBF response\r\n");
             gsmi_parse_cpbf(rcv->data);         /* Parse +CPBR statement */
 #endif /* GSM_CFG_PHONEBOOK */
         }
 
     /* Messages not starting with '+' sign */
     } else {
+        printf("Messages not starting with '+' sign\r\n");
         if (rcv->data[0] == 'S' && !strncmp(rcv->data, "SHUT OK" CRLF, 7 + CRLF_LEN)) {
             is_ok = 1;
 #if GSM_CFG_CONN
@@ -801,6 +823,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 #endif /* GSM_CFG_CALL */
 #if GSM_CFG_SMS
         } else if (rcv->data[0] == 'S' && !strncmp(rcv->data, "SMS Ready" CRLF, 9 + CRLF_LEN)) {
+            printf("SMS ready\r\n");
             gsm.m.sms.ready = 1;                /* SMS ready flag */
             gsmi_send_cb(GSM_EVT_SMS_READY);    /* Send SMS ready event */
 #endif /* GSM_CFG_SMS */
@@ -902,6 +925,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
                     gsm_conn_t* conn = &gsm.m.conns[num];   /* Get connection handle */
 
                     if (!strncmp(&rcv->data[3], "CONNECT OK" CRLF, 10 + CRLF_LEN)) {
+                        printf("Connected to server\r\n");
                         id = conn->val_id;
                         GSM_MEMSET(conn, 0x00, sizeof(*conn));  /* Reset connection parameters */
                         conn->num = num;
@@ -917,9 +941,11 @@ gsmi_parse_received(gsm_recv_t* rcv) {
                         gsm.msg->msg.conn_start.conn_res = GSM_CONN_CONNECT_OK;
                         is_ok = 1;
                     } else if (!strncmp(&rcv->data[3], "CONNECT FAIL" CRLF, 12 + CRLF_LEN)) {
+                        printf("CONNECT FAIL\r\n");
                         gsm.msg->msg.conn_start.conn_res = GSM_CONN_CONNECT_ERROR;
                         is_error = 1;
                     } else if (!strncmp(&rcv->data[3], "ALREADY CONNECT" CRLF, 15 + CRLF_LEN)) {
+                        printf("ALREADY CONNECT\r\n");
                         gsm.msg->msg.conn_start.conn_res = GSM_CONN_CONNECT_ALREADY;
                         is_error = 1;
                     }
@@ -1648,6 +1674,7 @@ gsmr_t
 gsmi_initiate_cmd(gsm_msg_t* msg) {
     switch (CMD_GET_CUR()) {                    /* Check current message we want to send over AT */
         case GSM_CMD_RESET: {                   /* Reset modem with AT commands */
+            printf("HuyTV : GSM_CMD_RESET\r\n");
             /* Try with hardware reset */
             if (gsm.ll.reset_fn != NULL && gsm.ll.reset_fn(1)) {
                 gsm_delay(2);
@@ -1662,12 +1689,14 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_RESET_DEVICE_FIRST_CMD: {  /* First command for device driver specific reset */
+            printf("HuyTV : First command for device driver specific reset\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_ATE0:
         case GSM_CMD_ATE1: {
+            printf("HuyTV : GSM_CMD_ATE\r\n");
             AT_PORT_SEND_BEGIN_AT();
             if (CMD_IS_CUR(GSM_CMD_ATE0)) {
                 AT_PORT_SEND_CONST_STR("E0");
@@ -1678,54 +1707,63 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CMEE_SET: {                /* Enable detailed error messages */
+            printf("HuyTV : Enable detailed error messages\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMEE=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CLCC_SET: {                /* Enable detailed call info */
+            printf("HuyTV : GSM_CMD_CLCC_SET\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CLCC=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CGMI_GET: {                /* Get manufacturer */
+            printf("Get manufacturer\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGMI");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CGMM_GET: {                /* Get model */
+            printf("Get model\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGMM");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CGSN_GET: {                /* Get serial number */
+            printf("Get serial number\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGSN");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CGMR_GET: {                /* Get revision */
+            printf("Get revision\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGMR");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CREG_SET: {                /* Enable +CREG message */
+            printf("Enable +CREG message\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CREG=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CREG_GET: {                /* Get network registration status */
+            printf("Enable network registration status\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CREG?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CFUN_SET: {
+            printf("Enable GSM_CMD_CFUN_SET\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CFUN=");
             /**
@@ -1741,12 +1779,14 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CPIN_GET: {                /* Read current SIM status */
+            printf("Read current SIM status \r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPIN?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CPIN_SET: {                /* Set SIM pin code */
+            printf("Set SIM pin code\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPIN=");
             gsmi_send_string(msg->msg.cpin_enter.pin, 0, 1, 0);
@@ -1754,6 +1794,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CPIN_ADD: {                /* Add new pin code */
+            printf("Add new pin code\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CLCK=\"SC\",1,");
             gsmi_send_string(msg->msg.cpin_add.pin, 0, 1, 0);
@@ -1761,6 +1802,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CPIN_CHANGE: {             /* Change already active SIM */
+            printf("Change already active SIM\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPWD=\"SC\"");
             gsmi_send_string(msg->msg.cpin_change.current_pin, 0, 1, 1);
@@ -1769,6 +1811,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CPIN_REMOVE: {             /* Remove current PIN */
+            printf("Remove current PIN\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CLCK=\"SC\",0,");
             gsmi_send_string(msg->msg.cpin_remove.pin, 0, 1, 0);
@@ -1776,6 +1819,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GMM_CMD_CPUK_SET: {                /* Enter PUK and set new PIN */
+            printf("Enter PUK and set new PIN\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPIN=");
             gsmi_send_string(msg->msg.cpuk_enter.puk, 0, 1, 0);
@@ -1784,6 +1828,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_COPS_SET: {                /* Set current operator */
+            printf("Set current operator\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+COPS=");
             gsmi_send_number(GSM_U32(msg->msg.cops_set.mode), 0, 0);
@@ -1802,30 +1847,35 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_COPS_GET: {                /* Get current operator */
+            printf("Get current operator\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+COPS?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_COPS_GET_OPT: {            /* Get list of available operators */
+            printf("Get list of available operators\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+COPS=?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CSQ_GET: {                 /* Get signal strength */
+            printf("Get signal strength\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CSQ");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CNUM: {                    /* Get SIM number */
+            printf("Get SIM number\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CNUM");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CIPSHUT: {                 /* Shut down network connection and put to reset state */
+            printf("Shut down network connection and put to reset stater\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPSHUT");
             AT_PORT_SEND_END_AT();
@@ -1833,24 +1883,28 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
         }
 #if GSM_CFG_CONN
         case GSM_CMD_CIPMUX: {                  /* Enable multiple connections */
+            printf("Enable multiple connections\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPMUX=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CIPHEAD: {                 /* Enable information on receive data about connection and length */
+            printf("Enable information on receive data about connection and length\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPHEAD=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CIPSRIP: {
+            printf("GSM_CMD_CIPSRIP\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPSRIP=1");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CIPSSL: {                  /* Set SSL configuration */
+            printf("Set SSL configuration\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPSSL=");
             gsmi_send_number((msg->msg.conn_start.type == GSM_CONN_TYPE_SSL) ? 1 : 0, 0, 0);
@@ -1858,6 +1912,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CIPSTART: {                /* Start a new connection */
+            printf("Start a new connection\r\n");
             gsm_conn_t* c = NULL;
 
             /* Do we have network connection? */
@@ -1895,6 +1950,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CIPCLOSE: {          /* Close the connection */
+            printf("Close the connection\r\n");
             gsm_conn_p c = msg->msg.conn_close.conn;
             if (c != NULL &&
                 /* Is connection already closed or command for this connection is not valid anymore? */
@@ -1908,9 +1964,11 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CIPSEND: {                 /* Send data to connection */
+            printf("Send data to connection\r\n");
             return gsmi_tcpip_process_send_data();  /* Process send data */
         }
         case GSM_CMD_CIPSTATUS: {               /* Get status of device and all connections */
+            printf("Get status of device and all connections\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CIPSTATUS");
             AT_PORT_SEND_END_AT();
@@ -1919,6 +1977,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
 #endif /* GSM_CFG_CONN */
 #if GSM_CFG_SMS
         case GSM_CMD_CMGF: {                    /* Select SMS message format */
+            printf("Select SMS message format\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGF=");
             if (CMD_IS_DEF(GSM_CMD_CMGS)) {
@@ -1935,6 +1994,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CMGS: {                    /* Send SMS */
+            printf("Send SMS\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGS=");
             gsmi_send_string(msg->msg.sms_send.num, 0, 1, 0);
@@ -1942,6 +2002,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CMGR: {                    /* Read message */
+            printf("Read message\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGR=");
             gsmi_send_number(GSM_U32(msg->msg.sms_read.pos), 0, 0);
@@ -1950,6 +2011,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CMGD: {                    /* Delete SMS message */
+            printf("Delete SMS message\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGD=");
             gsmi_send_number(GSM_U32(msg->msg.sms_delete.pos), 0, 0);
@@ -1957,6 +2019,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CMGDA: {                   /* Mass delete SMS messages */
+            printf("Mass delete SMS messages\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGDA=");
             switch (msg->msg.sms_delete_all.status) {
@@ -1973,6 +2036,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
         }
                            
         case GSM_CMD_CMGL: {                    /* Delete SMS message */
+            printf("Delete SMS message\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CMGL=");
             gsmi_send_sms_stat(msg->msg.sms_list.status, 1, 0);
@@ -1981,18 +2045,21 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CPMS_GET_OPT: {            /* Get available SMS storages */
+            printf("Get available SMS storages\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPMS=?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CPMS_GET: {                /* Get current SMS storage info */
+            printf("Get current SMS storage info\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPMS?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CPMS_SET: {                /* Set active SMS storage(s) */
+            printf("Get Set active SMS storage(s)\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPMS=");
             if (CMD_IS_DEF(GSM_CMD_CMGR)) { /* Read SMS original command? */
@@ -2012,6 +2079,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
 #endif /* GSM_CFG_SMS */
 #if GSM_CFG_CALL
         case GSM_CMD_ATD: {                     /* Start new call */
+            printf("Start new call\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("D");
             gsmi_send_string(msg->msg.call_start.number, 0, 0, 0);
@@ -2020,12 +2088,14 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_ATA: {                     /* Answer phone call */
+            printf("Answer phone call\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("A");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_ATH: {                     /* Disconnect existing connection (hang-up phone call) */
+            printf("Disconnect existing connection (hang-up phone call)\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("H");
             AT_PORT_SEND_END_AT();
@@ -2034,18 +2104,21 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
 #endif /* GSM_CFG_CALL */
 #if GSM_CFG_PHONEBOOK
         case GSM_CMD_CPBS_GET_OPT: {            /* Get available phonebook storages */
+            printf("Get available phonebook storages\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPBS=?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CPBS_GET: {                /* Get current memory info */
+            printf("Get current memory info\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPBS?");
             AT_PORT_SEND_END_AT();
             break;
         }
         case GSM_CMD_CPBS_SET: {                /* Get current memory info */
+            printf("Get current memory info\r\n");
             gsm_mem_t mem;
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CPBS=");
@@ -2092,6 +2165,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
 #if GSM_CFG_NETWORK
         case GSM_CMD_NETWORK_ATTACH:
         case GSM_CMD_CGACT_SET_0: {
+            printf("Network attach\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGACT=0");
             AT_PORT_SEND_END_AT();
@@ -2105,6 +2179,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
         }
         case GSM_CMD_NETWORK_DETACH:
         case GSM_CMD_CGATT_SET_0: {
+            printf("Network deattach\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CGATT=0");
             AT_PORT_SEND_END_AT();
@@ -2243,21 +2318,25 @@ gsmi_send_msg_to_producer_mbox(gsm_msg_t* msg, gsmr_t (*process_fn)(gsm_msg_t *)
  */
 void
 gsmi_process_events_for_timeout_or_error(gsm_msg_t* msg, gsmr_t err) {
+    printf("Function %s\r\n", __func__);
     switch (msg->cmd_def) {
         case GSM_CMD_RESET: {
             /* Reset command error */
+            printf("Reset command error\r\n");
             RESET_SEND_EVT(msg, err);
             break;
         }
 
         case GSM_CMD_RESTORE: {
             /* Restore command error */
+            printf("Restore command error\r\n");
             RESTORE_SEND_EVT(msg, err);
             break;
         }
 
         case GSM_CMD_COPS_GET_OPT: {
             /* Operator scan command error */
+            printf("Operator scan command error\r\n");
             OPERATOR_SCAN_SEND_EVT(msg, err);
             break;
         }
@@ -2265,12 +2344,14 @@ gsmi_process_events_for_timeout_or_error(gsm_msg_t* msg, gsmr_t err) {
 #if GSM_CFG_CONN
         case GSM_CMD_CIPSTART: {
             /* Start connection error */
+            printf("Start connection error\r\n");
             gsmi_send_conn_error_cb(msg, err);
             break;
         }
 
         case GSM_CMD_CIPSEND: {
             /* Send data error event */
+            printf("Send data error event\r\n");
             CONN_SEND_DATA_SEND_EVT(msg, err);
             break;
         }
@@ -2279,29 +2360,34 @@ gsmi_process_events_for_timeout_or_error(gsm_msg_t* msg, gsmr_t err) {
 #if GSM_CFG_SMS
         case GSM_CMD_CMGS: {
             /* Send error event */
+            printf("Send SMS error event\r\n");
             SMS_SEND_SEND_EVT(msg, err);
             break;
         }
 
         case GSM_CMD_CMGR: {
             /* Read error event */
+            printf("Read SMS error event\r\n");
             SMS_SEND_READ_EVT(msg, err);
             break;
         }
 
         case GSM_CMD_CMGL: {
             /* List error event */
+            printf("List SMS error event\r\n");
             SMS_SEND_LIST_EVT(msg, err);
             break;
         }
 
         case GSM_CMD_CMGD: {
+            printf("Delete SMS error event\r\n");
             /* Delete error event */
             SMS_SEND_DELETE_EVT(msg, err);
             break;
         }
 #endif /* GSM_CFG_SMS */
 
-        default: break;
+        default: 
+            break;
     }
 }

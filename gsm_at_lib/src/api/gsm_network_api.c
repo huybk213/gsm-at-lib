@@ -34,7 +34,7 @@
 #include "gsm/gsm_network_api.h"
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_network.h"
-
+#include "stdafx.h"
 #if GSM_CFG_NETWORK || __DOXYGEN__
 
 /* Network credentials used during connect operation */

@@ -34,7 +34,7 @@
 #include "system/gsm_sys.h"
 #include <string.h>
 #include <stdlib.h>
-
+#include "stdafx.h"
 #if !__DOXYGEN__
 
 /**

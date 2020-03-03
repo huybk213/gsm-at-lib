@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_sms.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 #if GSM_CFG_SMS || __DOXYGEN__
 
 #define GSM_SMS_OPERATION_IDX           0   /*!< Operation index for memory array (read, delete, list) */

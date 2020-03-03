@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_ftp.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 #if GSM_CFG_FTP || __DOXYGEN__
 
 #endif /* GSM_CFG_FTP || __DOXYGEN__ */

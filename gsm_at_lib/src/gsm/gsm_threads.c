@@ -39,7 +39,7 @@
 #include "gsm/gsm.h"
 #include "gsm/gsm_mem.h"
 #include "system/gsm_sys.h"
-
+#include "stdafx.h"
 /**
  * \brief           User thread to process input packets from API functions
  * \param[in]       arg: User argument. Semaphore to release when thread starts
@@ -59,6 +59,7 @@ gsm_thread_produce(void* const arg) {
 
     gsm_core_lock();
     while (1) {
+        printf("Wait for event in thread %s\r\n", __func__);
         gsm_core_unlock();
         do {
             time = gsm_sys_mbox_get(&e->mbox_producer, (void **)&msg, 0);   /* Get message from queue */
@@ -66,6 +67,7 @@ gsm_thread_produce(void* const arg) {
         GSM_THREAD_PRODUCER_HOOK();             /* Execute producer thread hook */
         gsm_core_lock();
 
+        printf("Process event in thread %s\r\n", __func__);
         res = gsmOK;                            /* Start with OK */
         e->msg = msg;                           /* Set message handle */
 

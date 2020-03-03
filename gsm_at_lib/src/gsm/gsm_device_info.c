@@ -34,6 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_device_info.h"
 #include "gsm/gsm_mem.h"
+#include "stdafx.h"
 
 /**
  * \brief           Get device manufacturer

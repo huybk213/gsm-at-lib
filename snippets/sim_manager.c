@@ -1,17 +1,17 @@
 #include "sim_manager.h"
 #include "gsm/gsm.h"
-
+#include "stdafx.h"
 /**
  * \brief           SIM card pin code
  */
 static const char *
-pin_code = "7958";
+pin_code = NULL;
 
 /**
  * \brief           SIM card puk code
  */
 static const char *
-puk_code = "10663647";
+puk_code = NULL;
 
 /**
  * \brief           Configure and enable SIM card

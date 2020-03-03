@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_operator.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /**
  * \brief           Get current operator
  * \param[out]      curr: Pointer to output variable to save info about current operator

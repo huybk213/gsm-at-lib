@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_debug.h"
 #include "gsm/gsm.h"
-
+#include "stdafx.h"
 #if GSM_CFG_DBG || __DOXYGEN__
 
 const char *

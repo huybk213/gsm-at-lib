@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_timeout.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 static gsm_timeout_t* first_timeout;
 static uint32_t last_timeout_time;
 

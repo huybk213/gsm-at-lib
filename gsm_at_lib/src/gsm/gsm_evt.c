@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_evt.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /**
  * \brief           Register callback function for global (non-connection based) events
  * \param[in]       fn: Callback function to call on specific event

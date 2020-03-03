@@ -115,5 +115,11 @@
     <ClCompile Include="..\..\..\GSM_AT_Lib\src\api\gsm_network_api.c">
       <Filter>Source Files\GSM API</Filter>
     </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
 </Project>

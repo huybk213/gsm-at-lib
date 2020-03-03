@@ -1,7 +1,7 @@
 #include "netconn_client.h"
 #include "gsm/gsm.h"
 #include "gsm/gsm_network_api.h"
-
+#include "stdafx.h"
 #if GSM_CFG_NETCONN
 
 /**

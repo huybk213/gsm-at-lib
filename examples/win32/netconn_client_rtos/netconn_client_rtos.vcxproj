@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\huytv\Desktop\gsm-at-lib\examples\win32\netconn_client_rtos;.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
@@ -89,7 +89,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -172,6 +172,10 @@
     <ClCompile Include="..\..\..\snippets\network_utils.c" />
     <ClCompile Include="..\..\..\snippets\sim_manager.c" />
     <ClCompile Include="main.c" />
+    <ClCompile Include="stdafx.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

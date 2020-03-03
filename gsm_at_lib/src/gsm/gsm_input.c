@@ -35,7 +35,7 @@
 #include "gsm/gsm.h"
 #include "gsm/gsm_input.h"
 #include "gsm/gsm_buff.h"
-
+#include "stdafx.h"
 static uint32_t gsm_recv_total_len;
 static uint32_t gsm_recv_calls;
 

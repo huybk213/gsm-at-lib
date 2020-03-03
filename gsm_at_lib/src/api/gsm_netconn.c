@@ -35,6 +35,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_conn.h"
 #include "gsm/gsm_mem.h"
+#include "stdafx.h"
 
 #if GSM_CFG_NETCONN || __DOXYGEN__
 
@@ -118,6 +119,7 @@ netconn_evt(gsm_evt_t* evt) {
          * and should be handled by netconn API
          */
         case GSM_EVT_CONN_ACTIVE: {             /* A new connection active is active */
+            printf("GSM_EVT_CONN_ACTIVE\r\n");
             if (gsm_conn_is_client(conn)) {     /* Was connection started by us? */
                 nc = gsm_conn_get_arg(conn);    /* Argument should be already set */
                 if (nc != NULL) {
@@ -148,6 +150,7 @@ netconn_evt(gsm_evt_t* evt) {
          * should have netconn structure as argument
          */
         case GSM_EVT_CONN_RECV: {
+            printf("GSM_EVT_CONN_RECV\r\n");
             gsm_pbuf_p pbuf;
 
             nc = gsm_conn_get_arg(conn);        /* Get API from connection */
@@ -172,6 +175,7 @@ netconn_evt(gsm_evt_t* evt) {
 
         /* Connection was just closed */
         case GSM_EVT_CONN_CLOSE: {
+            printf("Connection was just closed\r\n");
             nc = gsm_conn_get_arg(conn);        /* Get API from connection */
 
             /*
@@ -296,7 +300,7 @@ gsm_netconn_connect(gsm_netconn_p nc, const char* host, gsm_port_t port) {
     GSM_ASSERT("nc != NULL", nc != NULL);
     GSM_ASSERT("host != NULL", host != NULL);
     GSM_ASSERT("port > 0", port > 0);
-
+    printf("Connecting to %s, port %d\r\n", host, port);
     /*
      * Start a new connection as client and:
      *

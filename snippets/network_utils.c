@@ -1,6 +1,6 @@
 #include "network_utils.h"
 #include "gsm/gsm.h"
-
+#include "stdafx.h"
 /**
  * \brief           RSSI state on network
  */

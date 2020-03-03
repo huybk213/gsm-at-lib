@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_sim.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /**
  * \brief           Get current cached SIM state from stack
  * \note            Information is always valid, starting after successful device reset using \ref gsm_reset function call

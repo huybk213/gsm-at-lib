@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_mem.h"
 #include <limits.h>
-
+#include "stdafx.h"
 #if !GSM_CFG_MEM_CUSTOM || __DOXYGEN__
 
 #if !__DOXYGEN__

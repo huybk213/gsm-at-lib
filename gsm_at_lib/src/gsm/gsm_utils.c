@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_utils.h"
 #include <stdint.h>
-
+#include "stdafx.h"
 /**
  * \brief           Convert `unsigned 32-bit` number to string
  * \param[in]       num: Number to convert

@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_phonebook.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 #if GSM_CFG_PHONEBOOK || __DOXYGEN__
 
 #if !__DOXYGEN__

@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_parser.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /**
  * \brief           Parse number from string
  * \note            Input string pointer is changed and number is skipped
@@ -181,6 +181,7 @@ gsmi_check_and_trim(const char** src) {
  */
 uint8_t
 gsmi_parse_ip(const char** src, gsm_ip_t* ip) {
+    printf("Parse ip\r\n");
     const char* p = *src;
 
     if (*p == ',') {
@@ -200,6 +201,7 @@ gsmi_parse_ip(const char** src, gsm_ip_t* ip) {
     }
 
     *src = p;                                   /* Set new pointer */
+    printf("Got ip %s\r\n", p);
     return 1;
 }
 

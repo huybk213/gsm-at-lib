@@ -35,7 +35,7 @@
 #include "gsm/gsm_conn.h"
 #include "gsm/gsm_mem.h"
 #include "gsm/gsm_timeout.h"
-
+#include "stdafx.h"
 #if GSM_CFG_CONN || __DOXYGEN__
 
 /**

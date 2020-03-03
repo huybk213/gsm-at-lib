@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_ping.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 #if GSM_CFG_PING || __DOXYGEN__
 
 #endif /* GSM_CFG_PING || __DOXYGEN__ */

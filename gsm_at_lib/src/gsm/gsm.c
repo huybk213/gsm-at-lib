@@ -35,7 +35,7 @@
 #include "gsm/gsm_mem.h"
 #include "gsm/gsm_threads.h"
 #include "system/gsm_ll.h"
-
+#include "stdafx.h"
 #if GSM_CFG_OS != 1
 #error GSM_CFG_OS must be set to 1!
 #endif

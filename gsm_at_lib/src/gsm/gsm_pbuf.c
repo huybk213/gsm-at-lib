@@ -34,7 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_pbuf.h"
 #include "gsm/gsm_mem.h"
-
+#include "stdafx.h"
 /* Set size of pbuf structure */
 #define SIZEOF_PBUF_STRUCT          GSM_MEM_ALIGN(sizeof(gsm_pbuf_t))
 #define SET_NEW_LEN(v, len)         do { if ((v) != NULL) { *(v) = (len); } } while (0)

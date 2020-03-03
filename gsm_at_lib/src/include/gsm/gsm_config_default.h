@@ -504,7 +504,7 @@
  * as connection API, FTP, HTTP, etc.
  */
 #ifndef GSM_CFG_NETWORK
-#define GSM_CFG_NETWORK                     0
+#define GSM_CFG_NETWORK                     1
 #endif
 
 /**
@@ -523,7 +523,7 @@
  * \note            \ref GSM_CFG_NETWORK must be enabled to use connection feature
  */
 #ifndef GSM_CFG_CONN
-#define GSM_CFG_CONN                        0
+#define GSM_CFG_CONN                        1
 #endif
 
 /**
@@ -531,7 +531,7 @@
  *
  */
 #ifndef GSM_CFG_SMS
-#define GSM_CFG_SMS                         0
+#define GSM_CFG_SMS                         1
 #endif
 
 /**
@@ -539,7 +539,7 @@
  *
  */
 #ifndef GSM_CFG_CALL
-#define GSM_CFG_CALL                        0
+#define GSM_CFG_CALL                        1
 #endif
 
 /**
@@ -547,7 +547,7 @@
  *
  */
 #ifndef GSM_CFG_PHONEBOOK
-#define GSM_CFG_PHONEBOOK                   0
+#define GSM_CFG_PHONEBOOK                   1
 #endif
 
 /**
@@ -556,7 +556,7 @@
  * \note            \ref GSM_CFG_NETWORK must be enabled to use connection feature
  */
 #ifndef GSM_CFG_HTTP
-#define GSM_CFG_HTTP                        0
+#define GSM_CFG_HTTP                        1
 #endif
 
 /**
@@ -565,7 +565,7 @@
  * \note            \ref GSM_CFG_NETWORK must be enabled to use connection feature
  */
 #ifndef GSM_CFG_FTP
-#define GSM_CFG_FTP                         0
+#define GSM_CFG_FTP                         1
 #endif
 
 /**
