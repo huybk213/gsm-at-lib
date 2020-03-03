@@ -72,6 +72,8 @@ gsmr_t
 gsm_init(gsm_evt_fn evt_func, const uint32_t blocking) {
     gsmr_t res = gsmOK;
 
+    printf("gsm_init, baudrate %d\r\n", GSM_CFG_AT_PORT_BAUDRATE);
+
     gsm.status.f.initialized = 0;               /* Clear possible init flag */
 
     def_evt_link.fn = evt_func != NULL ? evt_func : def_callback;
