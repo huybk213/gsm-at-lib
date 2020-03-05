@@ -488,6 +488,7 @@ gsmi_send_conn_cb(gsm_conn_t* conn, gsm_evt_fn evt) {
     if (evt != NULL) {                          /* Try with user connection */
         return evt(&gsm.evt);                   /* Call temporary function */
     } else if (conn != NULL && conn->evt_func != NULL) {/* Connection custom callback? */
+        printf("Process callback func\r\n");
         return conn->evt_func(&gsm.evt);        /* Process callback function */
     } else if (conn == NULL) {
         return gsmOK;
@@ -681,7 +682,6 @@ static void
 gsmi_parse_received(gsm_recv_t* rcv) {
     uint8_t is_ok = 0;
     uint16_t is_error = 0;
-
     /* Try to remove non-parsable strings */
     if (rcv->len == 2 && rcv->data[0] == '\r' && rcv->data[1] == '\n') {
         return;
@@ -785,7 +785,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 
     /* Messages not starting with '+' sign */
     } else {
-        printf("Messages not starting with '+' sign\r\n");
+        //printf("Messages not starting with '+' sign\r\n");
         if (rcv->data[0] == 'S' && !strncmp(rcv->data, "SHUT OK" CRLF, 7 + CRLF_LEN)) {
             is_ok = 1;
 #if GSM_CFG_CONN
@@ -967,6 +967,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 
             /* Check for manual CUSTOM OK message */
             if (!strcmp(rcv->data, "CUSTOM_OK\r\n")) {
+                printf("Func %s : custom command ok\r\n", __func__);
                 is_ok = 1;
             }
 #endif /* GSM_CFG_USSD */
@@ -980,6 +981,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
     if (is_ok || is_error) {
         gsmr_t res = gsmOK;
         if (gsm.msg != NULL) {                  /* Do we have active message? */
+            printf("%s : gsmi_process_sub_cmd\r\n", __func__);
             res = gsmi_process_sub_cmd(gsm.msg, &is_ok, &is_error);
             if (res != gsmCONT) {               /* Shall we continue with next subcommand under this one? */
                 if (is_ok) {                    /* Check OK status */
@@ -991,14 +993,20 @@ gsmi_parse_received(gsm_recv_t* rcv) {
                 ++gsm.msg->i;                   /* Number of continue calls */
             }
 
+
             /*
              * When the command is finished,
              * release synchronization semaphore
              * from user thread and start with next command
              */
             if (res != gsmCONT) {                   /* Do we have to continue to wait for command? */
+                printf("Func %s : release synchronization semaphore\r\n", __func__);
                 gsm_sys_sem_release(&gsm.sem_sync); /* Release semaphore */
             }
+        }
+        else
+        {
+            printf("gsm.msg is null, func %s, line %d\r\n", __func__, __LINE__);
         }
     }
 }
@@ -1207,6 +1215,7 @@ gsmi_process(const void* data, size_t data_len) {
                 /* End of reading, command finished! */
                 /* Return OK at this point! */
                 strcpy(recv_buff.data, "CUSTOM_OK\r\n");
+                printf("Parse cusd message\r\n");
                 recv_buff.len = strlen(recv_buff.data);
                 gsmi_parse_received(&recv_buff);
             }
@@ -1352,6 +1361,7 @@ gsmi_process(const void* data, size_t data_len) {
  */
 static gsmr_t
 gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
+    uint32_t custom_ok = 0;
     gsm_cmd_t n_cmd = GSM_CMD_IDLE;
     if (CMD_IS_DEF(GSM_CMD_RESET)) {
         switch (CMD_GET_CUR()) {                /* Check current command */
@@ -1640,9 +1650,18 @@ gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
     } else if (CMD_IS_DEF(GSM_CMD_CUSD)) {
         if (CMD_IS_CUR(GSM_CMD_CUSD_GET)) {
             if (*is_ok) {
+                printf("Command GSM_CMD_CUSD_GET\r\n");
                 SET_NEW_CMD(GSM_CMD_CUSD);      /* Run next command */
             }
         }
+
+        // HuyTV
+        else if (CMD_IS_DEF(GSM_CMD_CUSD)) {
+            printf("Command GSM_CMD_CUSD\r\n"); // HuyTV
+            memcpy(gsm.msg->evt_arg, msg, sizeof(gsm_msg_t));
+        }
+        // Endif
+
         /* The rest is handled in one layer above */
 #endif /* GSM_CFG_USSD */
     }
@@ -1651,6 +1670,7 @@ gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
     if (n_cmd != GSM_CMD_IDLE) {
         gsmr_t res;
         msg->cmd = n_cmd;
+        printf("Calling callback\r\n");
         if ((res = msg->fn(msg)) == gsmOK) {
             return gsmCONT;
         } else {
@@ -2241,6 +2261,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
         }
 #endif /* GSM_CFG_USSD */
         default:
+            printf("Invalid gsm_cmd_t %d\r\n", CMD_GET_CUR());
             return gsmERR;                      /* Invalid command */
     }
     return gsmOK;                               /* Valid command */

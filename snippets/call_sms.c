@@ -5,6 +5,7 @@
  */
 #include "call_sms.h"
 #include "gsm/gsm.h"
+#include "stdafx.h"
 
 #if !GSM_CFG_SMS || !GSM_CFG_CALL
 #error "SMS & CALL must be enabled to run this example"
@@ -74,17 +75,19 @@ call_sms_evt_func(gsm_evt_t* evt) {
             gsm_sms_entry_t* entry = gsm_evt_sms_read_get_entry(evt);
             if (gsm_evt_sms_read_get_result(evt) == gsmOK && entry != NULL) {
                 /* Print SMS data */
-                printf("SMS read. From: %s, content: %s\r\n",
-                    entry->number, entry->data
+                printf("func %s : SMS read. From: %s, content: %s\r\n",
+                    __func__, entry->number, entry->data
                 );
 
                 /* Try to send SMS back */
-                if (gsm_sms_send(entry->number, entry->data, NULL, NULL, 0) == gsmOK) {
+                printf("HuyTV : Send sms back\r\n");
+                if (gsm_sms_send(entry->number, "Hihi", NULL, NULL, 0) == gsmOK) {
                     printf("SMS send in progress!\r\n");
                 } else {
                     printf("Cannot start SMS send procedure!\r\n");
                 }
 
+                printf("Delete SMS from device memory\r\n");
                 /* Delete SMS from device memory */
                 gsm_sms_delete(entry->mem, entry->pos, NULL, NULL, 0);
             }

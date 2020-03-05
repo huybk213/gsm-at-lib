@@ -90,7 +90,7 @@ configure_uart(uint32_t baudrate) {
      */
     if (!initialized) {
         static const LPCWSTR com_ports[] = {
-            L"\\\\.\\COM23",
+            L"\\\\.\\COM22",
             L"\\\\.\\COM12",
             L"\\\\.\\COM9",
             L"\\\\.\\COM8",
@@ -151,6 +151,8 @@ configure_uart(uint32_t baudrate) {
  */
 static void
 uart_thread(void* param) {
+    printf("%s started\r\n", __func__);
+
     DWORD bytes_read;
     gsm_sys_sem_t sem;
     FILE* file = NULL;

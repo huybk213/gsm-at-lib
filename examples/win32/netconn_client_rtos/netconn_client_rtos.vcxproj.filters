@@ -118,6 +118,12 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\snippets\call_sms.c">
+      <Filter>Source Files\GSM SNIPPETS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_ussd.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />

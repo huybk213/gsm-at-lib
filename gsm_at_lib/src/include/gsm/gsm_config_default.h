@@ -582,7 +582,7 @@
  *
  */
 #ifndef GSM_CFG_USSD
-#define GSM_CFG_USSD                        0
+#define GSM_CFG_USSD                        1
 #endif
 
 /**

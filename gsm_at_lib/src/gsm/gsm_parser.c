@@ -201,7 +201,6 @@ gsmi_parse_ip(const char** src, gsm_ip_t* ip) {
     }
 
     *src = p;                                   /* Set new pointer */
-    printf("Got ip %s\r\n", p);
     return 1;
 }
 

@@ -34,6 +34,7 @@
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_ussd.h"
 #include "gsm/gsm_mem.h"
+#include "stdafx.h"
 
 #if GSM_CFG_USSD || __DOXYGEN__
 

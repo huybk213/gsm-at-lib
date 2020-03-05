@@ -32,14 +32,40 @@
  * check gsm_ll_win32.c implementation and choose your COM port!
  */
 #include "gsm/gsm.h"
+#include "gsm/gsm_private.h"
 #include "sim_manager.h"
 #include "network_utils.h"
 #include "netconn_client.h"
 #include "network_apn_settings.h"
 #include "stdafx.h"
+#include "call_sms.h"
+#include "gsm/gsm_ussd.h"
 
 static gsmr_t gsm_callback_func(gsm_evt_t* evt);
+/* HuyTV */
 
+static gsmr_t gsm_call_callback(gsm_evt_t* evt)
+{
+    printf("HuyTV : %s\r\n", __func__);
+}
+
+
+
+static gsm_api_cmd_evt_fn gsm_finish_cmd_ussd_callback(gsmr_t res, void* arg)
+{
+    printf("HuyTV : %s\r\n", __func__);
+    gsm_msg_t * evt = (gsm_msg_t*)arg;
+    if (res == gsmOK)
+    {
+        printf("Query money success. Money %s\r\n", evt->msg.ussd.resp_len, evt->msg.ussd.resp);
+    }
+    else
+    {
+        printf("Query money failed\r\n");
+    }
+}
+
+/* End */
 /**
  * \brief           Program entry point
  */
@@ -66,6 +92,24 @@ main(void) {
 
     /* Start netconn thread */
     gsm_sys_thread_create(NULL, "netconn_thread", (gsm_sys_thread_t)netconn_client_thread, NULL, GSM_SYS_THREAD_SS, GSM_SYS_THREAD_PRIO);
+
+
+    // HuyTV
+    /* Start call and sms func */
+    printf("Start call and sms function\r\n");
+    call_sms_start();
+
+    /* Get money */
+    char money_response[128];
+    gsm_msg_t ussd_msg;
+    gsm_ussd_run("*101#", money_response, sizeof(money_response), gsm_finish_cmd_ussd_callback, &ussd_msg, 1);
+
+    /* Call to master every device reboot */
+    const char* master_number = "0942018895";
+    printf("Calling to %s\r\n", master_number);
+    gsm_call_start(master_number, gsm_call_callback, NULL, 1);
+
+    // End
 
     /*
      * Do not stop program here.
