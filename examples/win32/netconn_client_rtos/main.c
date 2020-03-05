@@ -57,7 +57,7 @@ static gsm_api_cmd_evt_fn gsm_finish_cmd_ussd_callback(gsmr_t res, void* arg)
     gsm_msg_t * evt = (gsm_msg_t*)arg;
     if (res == gsmOK)
     {
-        printf("Query money success. Money %s\r\n", evt->msg.ussd.resp_len, evt->msg.ussd.resp);
+        printf("Query money success. Money %s\r\n", evt->msg.ussd.resp);
     }
     else
     {
