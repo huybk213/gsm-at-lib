@@ -33,7 +33,6 @@ netconn_client_thread(void const* arg) {
 
     while (1)
     {
-        gsm_delay(240000);
         /* Request attach to network */
         while (gsm_network_request_attach() != gsmOK) {
             gsm_delay(1000);
@@ -119,6 +118,7 @@ netconn_client_thread(void const* arg) {
             gsm_netconn_delete(client);             /* Delete netconn structure */
         }
         gsm_network_request_detach();               /* Detach from network */
+        gsm_delay(3600000);
     }
 
     if (gsm_sys_sem_isvalid(sem)) {

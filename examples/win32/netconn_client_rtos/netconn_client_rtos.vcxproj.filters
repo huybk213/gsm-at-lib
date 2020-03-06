@@ -17,6 +17,9 @@
     <Filter Include="Source Files\GSM SNIPPETS">
       <UniqueIdentifier>{792653fc-9de7-4fc4-85f2-faec1d2684c9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gsm_shell">
+      <UniqueIdentifier>{b11c5b56-7f0e-4f42-9167-bd02a9ab3700}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -124,8 +127,26 @@
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_ussd.c">
       <Filter>Source Files\GSM CORE</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\gsm_shell\app_cli.c">
+      <Filter>gsm_shell</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_shell\vsm_shell.c">
+      <Filter>gsm_shell</Filter>
+    </ClCompile>
+    <ClCompile Include="gsm_app.c">
+      <Filter>gsm_shell</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="..\..\..\gsm_shell\app_cli.h">
+      <Filter>gsm_shell</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gsm_shell\vsm_shell.h">
+      <Filter>gsm_shell</Filter>
+    </ClInclude>
+    <ClInclude Include="gsm_app.h">
+      <Filter>gsm_shell</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

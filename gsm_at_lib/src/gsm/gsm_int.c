@@ -488,7 +488,7 @@ gsmi_send_conn_cb(gsm_conn_t* conn, gsm_evt_fn evt) {
     if (evt != NULL) {                          /* Try with user connection */
         return evt(&gsm.evt);                   /* Call temporary function */
     } else if (conn != NULL && conn->evt_func != NULL) {/* Connection custom callback? */
-        printf("Process callback func\r\n");
+        //printf("Process callback func\r\n");
         return conn->evt_func(&gsm.evt);        /* Process callback function */
     } else if (conn == NULL) {
         return gsmOK;
@@ -1658,7 +1658,7 @@ gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
         // HuyTV
         else if (CMD_IS_DEF(GSM_CMD_CUSD)) {
             printf("Command GSM_CMD_CUSD\r\n"); // HuyTV
-            memcpy(gsm.msg->evt_arg, msg, sizeof(gsm_msg_t));
+            if(gsm.msg->evt_arg) memcpy(gsm.msg->evt_arg, msg, sizeof(gsm_msg_t));
         }
         // Endif
 
