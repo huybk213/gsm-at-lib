@@ -41,7 +41,7 @@
 #include "call_sms.h"
 #include "gsm/gsm_ussd.h"
 #include "app_cli.h"
-
+#include "vsm_debug.h"
 static gsmr_t gsm_callback_func(gsm_evt_t* evt);
 /* HuyTV */
 
@@ -87,7 +87,7 @@ main(void) {
         printf("Cannot initialize GSM-AT Library\r\n");
     }
 
-    /* Configure device by unlocking SIM card */
+    ///* Configure device by unlocking SIM card */
     //if (configure_sim_card()) {
     //    printf("SIM card configured. Adding delay to stabilize SIM card.\r\n");
     //    gsm_delay(10000);

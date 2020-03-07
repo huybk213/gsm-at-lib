@@ -20,6 +20,9 @@
     <Filter Include="gsm_shell">
       <UniqueIdentifier>{b11c5b56-7f0e-4f42-9167-bd02a9ab3700}</UniqueIdentifier>
     </Filter>
+    <Filter Include="gsm_app">
+      <UniqueIdentifier>{4d2364da-3f48-4a7f-8745-a92e329581fe}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -133,8 +136,11 @@
     <ClCompile Include="..\..\..\gsm_shell\vsm_shell.c">
       <Filter>gsm_shell</Filter>
     </ClCompile>
-    <ClCompile Include="gsm_app.c">
-      <Filter>gsm_shell</Filter>
+    <ClCompile Include="..\..\..\gsm_app\gsm_app.c">
+      <Filter>gsm_app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_app\vsm_debug.c">
+      <Filter>gsm_app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -145,8 +151,11 @@
     <ClInclude Include="..\..\..\gsm_shell\vsm_shell.h">
       <Filter>gsm_shell</Filter>
     </ClInclude>
-    <ClInclude Include="gsm_app.h">
-      <Filter>gsm_shell</Filter>
+    <ClInclude Include="..\..\..\gsm_app\gsm_app.h">
+      <Filter>gsm_app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\gsm_app\vsm_debug.h">
+      <Filter>gsm_app</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

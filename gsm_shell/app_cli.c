@@ -59,7 +59,7 @@ static int32_t cli_config_sim(p_shell_context_t context, int32_t argc, char** ar
 
 static const shell_command_context_t cli_command_table[] = 
 {
-    {"connect",       "\tconnect: Connect to http server\r\n",                cli_connect_to_server,       3},
+    {"connect",       "\tconnect: Connect to http server\r\n",                cli_connect_to_server,       1},
     {"ussd",        "\tussd: ussd function\r\n",                 cli_ussd_money,     1},
     {"factory",     "\tFactory: Factory reset\r\n",             cli_factory_reset,      0},
     {"stack",       "\tStack: Trace task stack size\r\n",       cli_trace_task_stack,   0},
@@ -118,7 +118,7 @@ void vsm_cli_main_loop(void* pvParameters)
 /* Reset System */
 static int32_t cli_connect_to_server(p_shell_context_t context, int32_t argc, char **argv)
 {
-    gsm_app_connect_to_http_server(argv[1], atoi(argv[2]), argv[3]);
+    gsm_app_connect_to_http_server(argv[1]);
     return 0;
 }
 

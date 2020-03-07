@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\huytv\Desktop\gsm-at-lib\gsm_shell;C:\Users\huytv\Desktop\gsm-at-lib\examples\win32\netconn_client_rtos;.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\huytv\Desktop\gsm-at-lib\gsm_app;C:\Users\huytv\Desktop\gsm-at-lib\gsm_shell;C:\Users\huytv\Desktop\gsm-at-lib\examples\win32\netconn_client_rtos;.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
@@ -140,6 +140,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\gsm_app\gsm_app.c" />
+    <ClCompile Include="..\..\..\gsm_app\vsm_debug.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\api\gsm_netconn.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\api\gsm_network_api.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm.c" />
@@ -175,14 +177,14 @@
     <ClCompile Include="..\..\..\snippets\netconn_client.c" />
     <ClCompile Include="..\..\..\snippets\network_utils.c" />
     <ClCompile Include="..\..\..\snippets\sim_manager.c" />
-    <ClCompile Include="gsm_app.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\gsm_app\gsm_app.h" />
+    <ClInclude Include="..\..\..\gsm_app\vsm_debug.h" />
     <ClInclude Include="..\..\..\gsm_shell\app_cli.h" />
     <ClInclude Include="..\..\..\gsm_shell\vsm_shell.h" />
-    <ClInclude Include="gsm_app.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

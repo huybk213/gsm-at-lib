@@ -36,6 +36,9 @@
 #include "gsm/gsm_mem.h"
 #include "gsm/gsm_input.h"
 #include "stdafx.h"
+#include <stdio.h>
+#include <time.h>
+
 #if !__DOXYGEN__
 
 static uint8_t initialized = 0;
@@ -163,7 +166,13 @@ uart_thread(void* param) {
         gsm_sys_sem_wait(&sem, 1);              /* Add some delay with yield */
     }
 
-    fopen_s(&file, "log_file.txt", "w+");       /* Open debug file in write mode */
+
+    time_t t = time(NULL);
+    struct tm tm = *localtime(&t);
+    char now[128];
+    snprintf(now, sizeof(now), "log_file_%02d_%02d_%02d_%02d_%02d.txt", tm.tm_mon + 1, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+
+    fopen_s(&file, now, "w+");       /* Open debug file in write mode */
     while (1) {
         /*
          * Try to read data from COM port

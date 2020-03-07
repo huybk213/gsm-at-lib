@@ -62,7 +62,7 @@
 
 /*! @brief Macro to set console buffer size. */
 #ifndef SHELL_BUFFER_SIZE
-#define SHELL_BUFFER_SIZE (64U)
+#define SHELL_BUFFER_SIZE (256U)
 #endif
 
 /*! @brief Macro to set maximum arguments in command. */
