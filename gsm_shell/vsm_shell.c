@@ -148,7 +148,7 @@ int32_t SHELL_Main(p_shell_context_t context)
 
     while (1)
     {
-        gsm_delay(10);
+        gsm_delay(5);
         if (context->exit)
         {
             break;

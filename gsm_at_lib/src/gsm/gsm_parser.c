@@ -181,7 +181,7 @@ gsmi_check_and_trim(const char** src) {
  */
 uint8_t
 gsmi_parse_ip(const char** src, gsm_ip_t* ip) {
-    printf("Parse ip\r\n");
+    //printf("Parse ip\r\n");
     const char* p = *src;
 
     if (*p == ',') {

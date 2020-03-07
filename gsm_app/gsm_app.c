@@ -29,12 +29,12 @@ typedef struct {
 #define HTTP_ONLY_GOT_STATUS_CODE_AND_CONTENT_LENGTH_BUT_NOT_GET_FULL_HEADER 3
 #define HTTP_PARSE_SUCESS 4
 
-void* update_malloc(unsigned int size)
+void* http_malloc(unsigned int size)
 {
     return malloc(size);
 }
 
-void update_free(void* buf)
+void http_free(void* buf)
 {
     free(buf);
 }
@@ -48,7 +48,7 @@ static char* redirect_resource = NULL;
 #endif
 
 /******************************************************************************************************************
-** Function Name  : parse_http_response
+** Function Name  : _parse_http_response
 ** Description    : Parse the http response to get some useful parameters
 ** Input          : response	: The http response got from server
 **					response_len: The length of http response
@@ -59,7 +59,7 @@ static char* redirect_resource = NULL;
 **					Failed:		-1
 *******************************************************************************************************************/
 
-static int parse_http_response(uint8_t* response, uint32_t response_len, http_response_result_t* result, uint8_t* remain_data, uint32_t* remain_size)
+static int _parse_http_response(uint8_t* response, uint32_t response_len, http_response_result_t* result, uint8_t** remain_data, uint32_t* remain_size)
 {
     uint32_t i, p, q, m;
     uint32_t header_end = 0;
@@ -108,7 +108,7 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
                 printf("Location len = %d\r\n", redirect_len);
                 if (redirect == NULL)
                 {
-                    redirect = update_malloc(redirect_len);
+                    redirect = http_malloc(redirect_len);
                     if (redirect == NULL)
                     {
                         return HTTP_PARSE_ERROR;
@@ -120,7 +120,7 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
 
             if (redirect_server_host == NULL)
             {
-                redirect_server_host = update_malloc(redirect_len);
+                redirect_server_host = http_malloc(redirect_len);
                 if (redirect_server_host == NULL)
                 {
                     return HTTP_PARSE_ERROR;
@@ -129,7 +129,7 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
 
             if (redirect_resource == NULL)
             {
-                redirect_resource = update_malloc(redirect_len);
+                redirect_resource = http_malloc(redirect_len);
                 if (redirect_resource == NULL)
                 {
                     return HTTP_PARSE_ERROR;
@@ -150,7 +150,7 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
         }
         else
         {
-            printf("\n\r[%s] The http response status code is %d", __func__, result->status_code);
+            printf("\r\n[%s] The http response status code is %d", __func__, result->status_code);
             return HTTP_PARSE_ERROR;
         }
     }
@@ -172,7 +172,7 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
         }
         if (HTTP_ONLY_GOT_STATUS_CODE_AND_CONTENT_LENGTH_BUT_NOT_GET_FULL_HEADER == result->parse_status)
         {//Still didn't receive the full header	
-            result->header_bak = update_malloc(HEADER_BAK_LEN + 1);
+            result->header_bak = http_malloc(HEADER_BAK_LEN + 1);
             memset(result->header_bak, 0, strlen((char const*)result->header_bak));
             memcpy(result->header_bak, response + response_len - HEADER_BAK_LEN, HEADER_BAK_LEN);
         }
@@ -214,11 +214,12 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
                     result->header_len = header_end;
                     result->body = response + header_end;
                     *remain_size = response_len - i - 4;
-                    memcpy(remain_data, response + i + 4, *remain_size);
+                    // memcpy(remain_data, response + i + 4, *remain_size);
+                    *remain_data = response + i + 4;
                 }
                 else
                 {//there are no content length in header	
-                    printf("\n\r[%s] No Content-Length in header", __func__);
+                    printf("\r\n[%s] No Content-Length in header", __func__);
                     return HTTP_PARSE_ERROR;
                 }
                 break;
@@ -227,14 +228,14 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
 
         if (HTTP_ONLY_GOT_STATUS_CODE == result->parse_status)
         {//didn't get the content length and the full header
-            result->header_bak = update_malloc(HEADER_BAK_LEN + 1);
+            result->header_bak = http_malloc(HEADER_BAK_LEN + 1);
             memset(result->header_bak, 0, strlen((char const*)result->header_bak));
             memcpy(result->header_bak, response + response_len - HEADER_BAK_LEN, HEADER_BAK_LEN);
         }
         else if (2 == result->parse_status)
         {//didn't get the full header but get the content length
             result->parse_status = HTTP_ONLY_GOT_STATUS_CODE_AND_CONTENT_LENGTH_BUT_NOT_GET_FULL_HEADER;
-            result->header_bak = update_malloc(HEADER_BAK_LEN + 1);
+            result->header_bak = http_malloc(HEADER_BAK_LEN + 1);
             memset(result->header_bak, 0, strlen((char const*)result->header_bak));
             memcpy(result->header_bak, response + response_len - HEADER_BAK_LEN, HEADER_BAK_LEN);
         }
@@ -246,16 +247,16 @@ static int parse_http_response(uint8_t* response, uint32_t response_len, http_re
 /* Convert
     url : http://nguyentrongbang9x.s3-ap-southeast-1.amazonaws.com:80/cmd.txt
 
-    To : server : nguyentrongbang9x.s3-ap-southeast-1, 
-    port 80 (if has), 
-    resource /cmd.txt 
+    To : server : nguyentrongbang9x.s3-ap-southeast-1,
+    port 80 (if has),
+    resource /cmd.txt
 */
 
 static bool parse_ota_url(char* url, char* server, char* resource, uint32_t* port)
 {
-    #define VSM_HTTPCLIENT_MAX_CONNECT_URL 128      // only for dev
-    #define VSM_HTTPCLIENT_MAX_FILE_LEN 128 // only for dev
-    
+#define VSM_HTTPCLIENT_MAX_CONNECT_URL 128      // only for dev
+#define VSM_HTTPCLIENT_MAX_FILE_LEN 128 // only for dev
+
     if (url == NULL || server == NULL || resource == NULL || strlen(url) == 0)
     {
         return 0;
@@ -317,7 +318,7 @@ static bool parse_ota_url(char* url, char* server, char* resource, uint32_t* por
 
 
 gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported 
-{ 
+{
     if (url == NULL || strlen(url) == 0)
     {
         printf("Invalid parameter\r\n");
@@ -337,8 +338,8 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
 
     gsmr_t res = gsmERR;
     gsm_pbuf_p pbuf;
-  
-    gsm_netconn_p client;
+
+    gsm_netconn_p client = NULL;
     //gsm_sys_sem_t* sem = (void*)arg; 
     gsm_sys_sem_t* sem = NULL;
 
@@ -356,17 +357,17 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
         return gsmERRMEM;
     }
 
-    buf = update_malloc(HTTP_READ_BUFFER_SIZE);
+    buf = http_malloc(HTTP_READ_BUFFER_SIZE);
     if (!buf)
     {
-        printf("\n\r[%s] Alloc buffer failed", __func__);
+        printf("\r\n[%s] Alloc buffer failed", __func__);
         goto update_ota_exit;
     }
 
     cp += sprintf(cp, "GET %s HTTP/1.1\r\n", resource);
     cp += sprintf(cp, "Host: %s\r\n", domain);
     cp += sprintf(cp, "Accept: text/html, */*\r\n");
-    cp += sprintf(cp, "User-Agent: VSM Client\r\n");
+    cp += sprintf(cp, "User-Agent: GSM Client\r\n");
     cp += sprintf(cp, "Connection: keep-alive\r\n");
     cp += sprintf(cp, "Cache-control: no-cache\r\n");
     cp += sprintf(cp, "\r\n");
@@ -398,31 +399,32 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
          * Function will block thread until we are successfully connected (or not) to server
          */
         res = gsm_netconn_connect(client, domain, port);
-        if (res == gsmOK) 
+        if (res == gsmOK)
         {                     /* Are we successfully connected? */
             printf("Connected to %s, port %d\r\n", domain, port);
 
             res = gsm_netconn_write(client, request, strlen(request));    /* Send data to server */
-            if (res == gsmOK) 
+            if (res == gsmOK)
             {
                 res = gsm_netconn_flush(client);/* Flush data to output */
             }
-            if (res == gsmOK) 
+            if (res == gsmOK)
             {                 /* Were data sent? */
                 printf("Data were successfully sent to server\r\n");
 
-                buf = update_malloc(HTTP_READ_BUFFER_SIZE);
+                buf = http_malloc(HTTP_READ_BUFFER_SIZE);
                 if (!buf)
                 {
-                    printf("\n\r[%s] Alloc buffer failed", __func__);
+                    printf("\r\n[%s] Alloc buffer failed", __func__);
                     goto update_ota_exit;
                 }
 
-                remain_buf = malloc(HTTP_READ_BUFFER_SIZE);
-                if (!remain_buf) {
-                    printf("\n\r[%s] Alloc buffer failed", __FUNCTION__);
-                    goto update_ota_exit;
-                }
+                // remain_buf = malloc(HTTP_READ_BUFFER_SIZE);
+                // if (!remain_buf) 
+                // {
+                //     printf("\r\n[%s] Alloc buffer failed", __FUNCTION__);
+                //     goto update_ota_exit;
+                // }
 
                 /*
                  * Since we sent HTTP request,
@@ -467,7 +469,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                         idx = read_bytes;
                         memset(&rsp_result, 0, sizeof(rsp_result));
 
-                        if (parse_http_response(buf, idx, &rsp_result, remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR)
+                        if (_parse_http_response(buf, idx, &rsp_result, &remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR)
                         {
                             goto update_ota_exit;
                         }
@@ -476,17 +478,17 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                     {//just get the status code
                         memset(buf, 0, HTTP_READ_BUFFER_SIZE);
                         memcpy(buf, rsp_result.header_bak, HEADER_BAK_LEN);
-                        update_free(rsp_result.header_bak);
+                        http_free(rsp_result.header_bak);
                         rsp_result.header_bak = NULL;
 
                         exit = 0;
                         res = gsm_netconn_receive(client, &pbuf);
-                        if (res == gsmCLOSED) 
+                        if (res == gsmCLOSED)
                         {     /* Was the connection closed? This can be checked by return status of receive function */
                             printf("Connection closed by remote side...\r\n");
                             exit = 1;
                         }
-                        else if (res == gsmTIMEOUT) 
+                        else if (res == gsmTIMEOUT)
                         {
                             printf("Netconn timeout while receiving data. You may try multiple readings before deciding to close manually\r\n");
                             exit = 1;
@@ -494,7 +496,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
 
                         if (exit)
                         {
-                            printf("\n\r[%s] Read socket failed", __func__);
+                            printf("\r\n[%s] Read socket failed", __func__);
                             goto update_ota_exit;
                         }
 
@@ -505,7 +507,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
 
                         idx = read_bytes + HEADER_BAK_LEN;
 
-                        if (parse_http_response(buf, read_bytes + HEADER_BAK_LEN, &rsp_result, remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR) 
+                        if (_parse_http_response(buf, read_bytes + HEADER_BAK_LEN, &rsp_result, &remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR)
                         {
                             printf("Parse http response error\r\n");
                             goto update_ota_exit;
@@ -515,25 +517,30 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
 
                 if (0 == rsp_result.body_len)
                 {
-                    printf("\n\r[%s] New firmware size = 0 !", __func__);
+                    printf("\r\n[%s] Http body size = 0 !\r\n", __func__);
                     goto update_ota_exit;
                 }
-                else
-                    printf("\n\r[%s] Download new firmware begin, total size : %d\n\r", __func__, rsp_result.body_len);
 
                 body_len = rsp_result.body_len;
-                printf("\r\n[%s] fw size %d\r\n", __func__, body_len);
+                printf("\r\n[%s] File size %d\r\n", __func__, body_len);
 
-                if (remain_byte_after_parse_header)
+                // if (remain_byte_after_parse_header)
+                // {
+                //     printf("Fw binary header ");
+                //     for (uint32_t i = 0; i < 4; i++)     // debug
+                //     {
+                //         printf("0x%02X ", remain_buf[i]);
+                //     }
+                //     printf("\r\n");
+                // }
+                total_recv = remain_byte_after_parse_header;
+
+                if (total_recv)
                 {
-                    printf("Fw binary header ");
-                    for (uint32_t i = 0; i < 4; i++)     // debug
-                    {
-                        printf("0x%02X ", remain_buf[i]);
-                    }
-                    printf("\r\n");
+                    printf("Data %s\r\n", remain_buf);
+                    // http_free(remain_buf);
+                    // remain_buf = NULL;
                 }
-                total_recv = 0;
 
                 do {
                     /*
@@ -547,18 +554,18 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                      * was closed too early from remote side
                      */
                     res = gsm_netconn_receive(client, &pbuf);
-                    if (res == gsmCLOSED) 
+                    if (res == gsmCLOSED)
                     {     /* Was the connection closed? This can be checked by return status of receive function */
                         printf("Connection closed by remote side...\r\n");
                         break;
                     }
-                    else if (res == gsmTIMEOUT) 
+                    else if (res == gsmTIMEOUT)
                     {
                         printf("Netconn timeout while receiving data. You may try multiple readings before deciding to close manually\r\n");
                         break;
                     }
 
-                    if (res == gsmOK && pbuf != NULL) 
+                    if (res == gsmOK && pbuf != NULL)
                     { /* Make sure we have valid packet buffer */
                         /*
                          * At this point read and manipulate
@@ -569,48 +576,39 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                          */
 
                         total_recv += (int)gsm_pbuf_length(pbuf, 1);
-                        printf("Total byte received %d bytes\r\n", total_recv);
+                        printf("\r\n\r\nTotal byte received %d bytes\r\n\r\n%s\r\n\r\n", total_recv, (char*)gsm_pbuf_data(pbuf));
                         gsm_pbuf_free(pbuf);    /* Free the memory after usage */
                         pbuf = NULL;
                     }
                     gsm_delay(10);
                 } while (total_recv < body_len);
             }
-            else 
+            else
             {
                 printf("Error writing data to remote host!\r\n");
             }
             if (total_recv == body_len)
             {
-                printf("Firmware download success\r\n");
+                printf("HTTP download success\r\n");
                 res = gsmOK;
             }
-
-            /*
-             * Check if connection was closed by remote server
-             * and in case it wasn't, close it manually
-             */
-            if (res != gsmCLOSED) 
-            {
-                gsm_netconn_close(client);
-            }
         }
-        else 
+        else
         {
             printf("Cannot connect to remote host %s:%d\r\n", domain, port);
         }
     }
 update_ota_exit:
-    if(client) gsm_netconn_close(client);
+    if (client) gsm_netconn_close(client);
     client = NULL;
 
-    if (remain_buf) update_free(remain_buf);
-    if (buf) update_free(buf);
+    // if (remain_buf) http_free(remain_buf);
+    if (buf) http_free(buf);
     if (request) free(request);
 
     gsm_network_request_detach();
 
-    if (gsm_sys_sem_isvalid(sem)) 
+    if (gsm_sys_sem_isvalid(sem))
     {
         gsm_sys_sem_release(sem);
     }

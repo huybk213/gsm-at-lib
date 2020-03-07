@@ -716,7 +716,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 #endif /* GSM_CFG_NETWORK */
 #if GSM_CFG_CONN
         } else if (!strncmp(rcv->data, "+RECEIVE", 8)) {
-            printf("Parse IPD\r\n");
+            //printf("Parse IPD\r\n");
             gsmi_parse_ipd(rcv->data);          /* Parse IPD */
 #endif /* GSM_CFG_CONN */
         } else if (!strncmp(rcv->data, "+CREG", 5)) {   /* Check for +CREG indication */
@@ -981,7 +981,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
     if (is_ok || is_error) {
         gsmr_t res = gsmOK;
         if (gsm.msg != NULL) {                  /* Do we have active message? */
-            printf("%s : gsmi_process_sub_cmd\r\n", __func__);
+            //printf("%s : gsmi_process_sub_cmd\r\n", __func__);
             res = gsmi_process_sub_cmd(gsm.msg, &is_ok, &is_error);
             if (res != gsmCONT) {               /* Shall we continue with next subcommand under this one? */
                 if (is_ok) {                    /* Check OK status */
@@ -1000,7 +1000,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
              * from user thread and start with next command
              */
             if (res != gsmCONT) {                   /* Do we have to continue to wait for command? */
-                printf("Func %s : release synchronization semaphore\r\n", __func__);
+                //printf("Func %s : release synchronization semaphore\r\n", __func__);
                 gsm_sys_sem_release(&gsm.sem_sync); /* Release semaphore */
             }
         }
@@ -1670,7 +1670,7 @@ gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
     if (n_cmd != GSM_CMD_IDLE) {
         gsmr_t res;
         msg->cmd = n_cmd;
-        printf("Calling callback\r\n");
+        //printf("Calling callback\r\n");
         if ((res = msg->fn(msg)) == gsmOK) {
             return gsmCONT;
         } else {
@@ -1734,7 +1734,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_CLCC_SET: {                /* Enable detailed call info */
-            printf("HuyTV : GSM_CMD_CLCC_SET\r\n");
+            printf("Enable detailed call info\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+CLCC=1");
             AT_PORT_SEND_END_AT();
@@ -1867,7 +1867,7 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
         case GSM_CMD_COPS_GET: {                /* Get current operator */
-            printf("Get current operator\r\n");
+            //printf("Get current operator\r\n");
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+COPS?");
             AT_PORT_SEND_END_AT();
