@@ -349,7 +349,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
         return gsmERR;
     }
 
-    char* request = (unsigned char*)malloc(1024);      // pvPortMalloc
+    char* request = (unsigned char*)malloc(HTTP_READ_BUFFER_SIZE);      // pvPortMalloc
     char* cp = (char*)request;
     if (cp == NULL)
     {
@@ -357,12 +357,12 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
         return gsmERRMEM;
     }
 
-    buf = http_malloc(HTTP_READ_BUFFER_SIZE);
-    if (!buf)
-    {
-        printf("\r\n[%s] Alloc buffer failed", __func__);
-        goto update_ota_exit;
-    }
+    char * buf = NULL;
+    //if (!buf)
+    //{
+    //    printf("\r\n[%s] Alloc buffer failed", __func__);
+    //    goto http_exit;
+    //}
 
     cp += sprintf(cp, "GET %s HTTP/1.1\r\n", resource);
     cp += sprintf(cp, "Host: %s\r\n", domain);
@@ -373,8 +373,6 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
     cp += sprintf(cp, "\r\n");
 
     printf("HTTP header %s\r\n", request);
-
-
 
     /* Request attach to network */
     printf("%s : Request attach to network\r\n", __func__);
@@ -404,6 +402,12 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
             printf("Connected to %s, port %d\r\n", domain, port);
 
             res = gsm_netconn_write(client, request, strlen(request));    /* Send data to server */
+            if (request)
+            {
+                http_free(request);
+                request = NULL;
+            }
+
             if (res == gsmOK)
             {
                 res = gsm_netconn_flush(client);/* Flush data to output */
@@ -416,14 +420,14 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                 if (!buf)
                 {
                     printf("\r\n[%s] Alloc buffer failed", __func__);
-                    goto update_ota_exit;
+                    goto http_exit;
                 }
 
                 // remain_buf = malloc(HTTP_READ_BUFFER_SIZE);
                 // if (!remain_buf) 
                 // {
                 //     printf("\r\n[%s] Alloc buffer failed", __FUNCTION__);
-                //     goto update_ota_exit;
+                //     goto http_exit;
                 // }
 
                 /*
@@ -457,7 +461,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                         }
                         if (exit == 1)
                         {
-                            goto update_ota_exit;
+                            goto http_exit;
                         }
 
                         read_bytes = (int)gsm_pbuf_length(pbuf, 1);
@@ -471,7 +475,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
 
                         if (_parse_http_response(buf, idx, &rsp_result, &remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR)
                         {
-                            goto update_ota_exit;
+                            goto http_exit;
                         }
                     }
                     else if ((HTTP_ONLY_GOT_STATUS_CODE == rsp_result.parse_status) || (HTTP_ONLY_GOT_STATUS_CODE_AND_CONTENT_LENGTH_BUT_NOT_GET_FULL_HEADER == rsp_result.parse_status))
@@ -497,7 +501,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                         if (exit)
                         {
                             printf("\r\n[%s] Read socket failed", __func__);
-                            goto update_ota_exit;
+                            goto http_exit;
                         }
 
                         read_bytes = (int)gsm_pbuf_length(pbuf, 1);
@@ -510,7 +514,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                         if (_parse_http_response(buf, read_bytes + HEADER_BAK_LEN, &rsp_result, &remain_buf, &remain_byte_after_parse_header) == HTTP_PARSE_ERROR)
                         {
                             printf("Parse http response error\r\n");
-                            goto update_ota_exit;
+                            goto http_exit;
                         }
                     }
                 }
@@ -518,7 +522,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                 if (0 == rsp_result.body_len)
                 {
                     printf("\r\n[%s] Http body size = 0 !\r\n", __func__);
-                    goto update_ota_exit;
+                    goto http_exit;
                 }
 
                 body_len = rsp_result.body_len;
@@ -580,7 +584,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
                         gsm_pbuf_free(pbuf);    /* Free the memory after usage */
                         pbuf = NULL;
                     }
-                    gsm_delay(10);
+                    gsm_delay(10);  // Release time for another task process
                 } while (total_recv < body_len);
             }
             else
@@ -598,7 +602,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
             printf("Cannot connect to remote host %s:%d\r\n", domain, port);
         }
     }
-update_ota_exit:
+http_exit:
     if (client) gsm_netconn_close(client);
     client = NULL;
 
