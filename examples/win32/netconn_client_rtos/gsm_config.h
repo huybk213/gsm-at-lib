@@ -51,7 +51,9 @@
 #define GSM_CFG_NETWORK                         1
 #define GSM_CFG_CONN                            1
 #define GSM_CFG_NETCONN                         1
-
+#define GSM_LOCATION                            1
+#define GSM_CFG_BEARER                          1
+#define GSM_CFG_TIME_LOCATION                   1
 /* After user configuration, call default config to merge config together */
 #include "gsm/gsm_config_default.h"
 

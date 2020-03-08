@@ -53,13 +53,13 @@ static gsmr_t gsm_call_callback(gsm_evt_t* evt)
 
 
 
-static gsm_api_cmd_evt_fn gsm_finish_cmd_ussd_callback(gsmr_t res, void* arg)
+static void gsm_finish_cmd_ussd_callback(gsmr_t res, void* arg)
 {
     printf("HuyTV : %s\r\n", __func__);
     gsm_msg_t * evt = (gsm_msg_t*)arg;
     if (res == gsmOK)
     {
-        char* code = evt->msg.ussd.code;
+        const char* code = evt->msg.ussd.code;
         printf("Code %s\r\n", code);
         printf("Query money success. Len (%d) Data %s\r\n", evt->msg.ussd.resp_write_ptr, evt->msg.ussd.resp);
         if (strcmp(code, "*101#") == 0)
@@ -111,9 +111,9 @@ main(void) {
     /* Get money */
     //char money_response[128];
     //gsm_msg_t ussd_msg;
-    //gsm_ussd_run("*101#", money_response, sizeof(money_response), gsm_finish_cmd_ussd_callback, &ussd_msg, 1);
+    // gsm_ussd_run("*101#", money_response, sizeof(money_response), gsm_finish_cmd_ussd_callback, &ussd_msg, 1);
 
-   /* gsm_ussd_run("*100*133458660723#", money_response, sizeof(money_response), gsm_finish_cmd_ussd_callback, &ussd_msg, 1);*/
+   /*gsm_ussd_run("*100*133458660723#", money_response, sizeof(money_response), gsm_finish_cmd_ussd_callback, &ussd_msg, 1);*/
 
     /* Call to master every device reboot */
     //const char* master_number = "0942018895";

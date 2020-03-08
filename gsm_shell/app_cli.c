@@ -46,6 +46,8 @@
 #include "network_utils.h"
 #include "gsm_app.h"
 #include "call_sms.h"
+#include "gsm_bearer.h"
+#include "gsm_location_time.h"
 
 static void vsm_cli_main_loop(void* pvParameters);
 static int32_t cli_connect_to_server(p_shell_context_t context, int32_t argc, char **argv);
@@ -56,6 +58,8 @@ static int32_t cli_get_rssi(p_shell_context_t context, int32_t argc, char** argv
 static int32_t cli_send_sms(p_shell_context_t context, int32_t argc, char** argv);
 static int32_t cli_call(p_shell_context_t context, int32_t argc, char** argv);
 static int32_t cli_config_sim(p_shell_context_t context, int32_t argc, char** argv);
+static int32_t cli_bearer_open(p_shell_context_t context, int32_t argc, char** argv);
+static int32_t cli_location_time_get(p_shell_context_t context, int32_t argc, char** argv);
 
 static const shell_command_context_t cli_command_table[] = 
 {
@@ -66,8 +70,9 @@ static const shell_command_context_t cli_command_table[] =
     {"rssi",       "\tRSSI: Get signal strength\r\n",       cli_get_rssi,   0},
     {"sms",       "\tsms: Send sms\r\n",       cli_send_sms,   2},
     {"call",       "\tcall: Call to specific number\r\n",       cli_call,   1},
-    {"configsim",       "\tconfigsim: Config sim card\r\n",       cli_config_sim,   0}
-
+    {"configsim",       "\tconfigsim: Config sim card\r\n",       cli_config_sim,   0},
+    {"bearer",       "\tbearer (open-close-get): Bearer settings for applications based on IP\r\n",       cli_bearer_open,   1},
+    {"timeloc",       "\ttimeloc: Get location and time\r\n",       cli_location_time_get,   0}
 };
 
 
@@ -174,5 +179,56 @@ static int32_t cli_config_sim(p_shell_context_t context, int32_t argc, char** ar
     {
         printf("Config simcard error\r\n");
     }
+    return 1;
+}
+
+static int32_t cli_bearer_open(p_shell_context_t context, int32_t argc, char** argv)
+{
+    if(strcmp(argv[1], "open") == 0)
+        gsm_bearer_open(NULL, NULL, 1);
+    else if (strcmp(argv[1], "close") == 0){
+
+    }
+    else if (strcmp(argv[1], "get") == 0) {
+
+    }
+    return 1;
+}
+
+static void location_and_time_evt(gsmr_t res, void* arg)
+{
+    gsm_msg_t* evt = (gsm_msg_t*)arg;
+    if (evt->res == gsmOK)
+    {
+        printf("Time %d/%02d/%02d %d:%02d:%02d\r\nLongitude %s\r\nLatiude %s\r\n",
+            evt->msg.location_and_time.date_time.year,
+            evt->msg.location_and_time.date_time.month,
+            evt->msg.location_and_time.date_time.date,
+            evt->msg.location_and_time.date_time.hours,
+            evt->msg.location_and_time.date_time.minutes,
+            evt->msg.location_and_time.date_time.seconds,
+            evt->msg.location_and_time.location.longitude,
+            evt->msg.location_and_time.location.latitude
+        );
+    }
+    else
+    {
+        printf("Get location and time error %d\r\n", evt->msg.location_and_time.err_code);
+    }
+}
+
+static int32_t cli_location_time_get(p_shell_context_t context, int32_t argc, char** argv)
+{
+    gsm_msg_t arg;
+    memset(&arg, 0, sizeof(arg));
+
+    char longitude[12];
+    char latitude[12];
+
+    arg.msg.location_and_time.location.longitude = longitude;
+    arg.msg.location_and_time.location.latitude = latitude;
+
+    gsm_location_time_get(location_and_time_evt, &arg, 1);
+
     return 1;
 }

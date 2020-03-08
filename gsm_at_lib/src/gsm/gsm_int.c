@@ -781,6 +781,20 @@ gsmi_parse_received(gsm_recv_t* rcv) {
             printf("Parse +CPBF response\r\n");
             gsmi_parse_cpbf(rcv->data);         /* Parse +CPBR statement */
 #endif /* GSM_CFG_PHONEBOOK */
+
+#if GSM_CFG_TIME_LOCATION
+        }
+
+        else if (CMD_IS_CUR(GSM_CMD_LOCATION_TIME_GET) && !strncmp(rcv->data, "+CIPGSMLOC: ", 11)) {
+            if (gsmi_parse_cipgsmloc(rcv->data)) {
+                printf("gsmi_parse_cipgsmloc success\r\n");
+                is_ok = 1;
+            }
+            else {
+                printf("gsmi_parse_cipgsmloc error\r\n");
+                is_error = 1;
+            }             
+#endif /* GSM_CFG_TIME_LOCATION */
         }
 
     /* Messages not starting with '+' sign */
@@ -981,7 +995,7 @@ gsmi_parse_received(gsm_recv_t* rcv) {
     if (is_ok || is_error) {
         gsmr_t res = gsmOK;
         if (gsm.msg != NULL) {                  /* Do we have active message? */
-            //printf("%s : gsmi_process_sub_cmd\r\n", __func__);
+            //printf("gsmi_process_sub_cmd\r\n");
             res = gsmi_process_sub_cmd(gsm.msg, &is_ok, &is_error);
             if (res != gsmCONT) {               /* Shall we continue with next subcommand under this one? */
                 if (is_ok) {                    /* Check OK status */
@@ -1670,7 +1684,6 @@ gsmi_process_sub_cmd(gsm_msg_t* msg, uint8_t* is_ok, uint16_t* is_error) {
     if (n_cmd != GSM_CMD_IDLE) {
         gsmr_t res;
         msg->cmd = n_cmd;
-        //printf("Calling callback\r\n");
         if ((res = msg->fn(msg)) == gsmOK) {
             return gsmCONT;
         } else {
@@ -2260,6 +2273,34 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
             break;
         }
 #endif /* GSM_CFG_USSD */
+#if GSM_CFG_BEARER
+        case GSM_CMD_SAPBR:
+        {
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+SAPBR=");
+            gsmi_send_number(msg->msg.bearer_param.cmd_type, 0, 0);
+            gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);
+            if (CMD_IS_DEF(GSM_CMD_SAPBR_SET)) {
+                printf("GSM_CMD_SAPBR_SET\r\n");
+                gsmi_send_string(msg->msg.bearer_param.tag, 1, 1, 1);
+                gsmi_send_string(msg->msg.bearer_param.tag_value, 1, 1, 1);
+            }
+            else if(CMD_IS_DEF(GSM_CMD_SAPBR_OPEN)) {
+            }
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+#endif /* GSM_CFG_BEARER */
+#if GSM_CFG_TIME_LOCATION
+        case GSM_CMD_LOCATION_TIME_GET:
+        {
+            AT_PORT_SEND_BEGIN_AT();
+            AT_PORT_SEND_CONST_STR("+CIPGSMLOC=1,1");
+            AT_PORT_SEND_END_AT();
+            break;
+        }
+#endif /* GSM_CFG_TIME_LOCATION */
+        
         default:
             printf("Invalid gsm_cmd_t %d\r\n", CMD_GET_CUR());
             return gsmERR;                      /* Invalid command */
@@ -2319,6 +2360,7 @@ gsmi_send_msg_to_producer_mbox(gsm_msg_t* msg, gsmr_t (*process_fn)(gsm_msg_t *)
         if (time == GSM_SYS_TIMEOUT) {          /* If semaphore was not accessed within given time */
             res = gsmTIMEOUT;                   /* Semaphore not released in time */
         } else {
+            //printf("MSG->REG %d\r\n", msg->res);
             res = msg->res;                     /* Set response status from message response */
         }
         GSM_MSG_VAR_FREE(msg);                  /* Release message */

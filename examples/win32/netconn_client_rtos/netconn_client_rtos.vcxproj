@@ -177,6 +177,8 @@
     <ClCompile Include="..\..\..\snippets\netconn_client.c" />
     <ClCompile Include="..\..\..\snippets\network_utils.c" />
     <ClCompile Include="..\..\..\snippets\sim_manager.c" />
+    <ClCompile Include="gsm_bearer.c" />
+    <ClCompile Include="gsm_location_time.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
@@ -185,6 +187,8 @@
     <ClInclude Include="..\..\..\gsm_app\vsm_debug.h" />
     <ClInclude Include="..\..\..\gsm_shell\app_cli.h" />
     <ClInclude Include="..\..\..\gsm_shell\vsm_shell.h" />
+    <ClInclude Include="gsm_bearer.h" />
+    <ClInclude Include="gsm_location.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

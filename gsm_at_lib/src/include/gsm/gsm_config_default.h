@@ -585,6 +585,14 @@
 #define GSM_CFG_USSD                        1
 #endif
 
+#ifndef GSM_CFG_BEARER
+#define GSM_CFG_BEARER                      1
+#endif
+
+#ifndef GSM_CFG_TIME_LOCATION
+#define GSM_CFG_TIME_LOCATION               1
+#endif
+
 /**
  * \}
  */

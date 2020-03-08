@@ -143,6 +143,15 @@ typedef struct {
 } gsm_datetime_t;
 
 /**
+ * \ingroup         GSM_TYPEDEFS
+ * \brief           Location structure
+ */
+typedef struct {
+    char * longitude;
+    char * latitude;
+} gsm_location_t;
+
+/**
  * \ingroup         GSM_CONN
  * \brief           List of possible connection types
  */
@@ -422,6 +431,9 @@ typedef enum gsm_cb_type_t {
     GSM_EVT_PB_ENABLE,                          /*!< Phonebook enable event */
     GSM_EVT_PB_LIST,                            /*!< Phonebook list event */
     GSM_EVT_PB_SEARCH,                          /*!< Phonebook search event */
+#endif /* GSM_CFG_PHONEBOOK || __DOXYGEN__ */
+#if GSM_CFG_TIME_LOCATION || __DOXYGEN__
+    GSM_EVT_TIME_LOCATION_RECV
 #endif /* GSM_CFG_PHONEBOOK || __DOXYGEN__ */
 } gsm_evt_type_t;
 

@@ -356,8 +356,6 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
         printf("No memory\r\n");
         return gsmERRMEM;
     }
-
-    char * buf = NULL;
     //if (!buf)
     //{
     //    printf("\r\n[%s] Alloc buffer failed", __func__);

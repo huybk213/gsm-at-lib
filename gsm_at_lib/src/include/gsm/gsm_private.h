@@ -251,6 +251,11 @@ typedef enum {
     GSM_CMD_CSMP,                               /*!< Set SMS Text Mode Parameters */
     GSM_CMD_CSMS,                               /*!< Select Message Service */
 
+    GSM_CMD_SAPBR,                              /*!< Bearer for Applications Based on IP */
+    GSM_CMD_SAPBR_SET,                          /*!< Bearer Write Settings for Applications Based on IP */
+    GSM_CMD_SAPBR_OPEN,                         /*!< Bearer Open for Applications Based on IP */
+
+    GSM_CMD_LOCATION_TIME_GET,                       /*!< Location and time service */
     GSM_CMD_END,                                /*!< Last CMD entry */
 } gsm_cmd_t;
 
@@ -515,6 +520,21 @@ typedef struct gsm_msg {
             const char* pass;                   /*!< APN password */
         } network_attach;                       /*!< Settings for network attach */
 #endif /* GSM_CFG_NETWORK || __DOXYGEN__ */
+#if GSM_CFG_BEARER || __DOXYGEN__
+        struct {
+            char* tag;
+            char* tag_value;
+            uint8_t cmd_type;
+            uint8_t cid;
+        } bearer_param;
+#endif /* GSM_CFG_NETWORK || __DOXYGEN__ */
+#if GSM_CFG_TIME_LOCATION || __DOXYGEN__
+        struct {
+            gsm_location_t location;
+            gsm_datetime_t date_time;
+            uint16_t err_code;
+        } location_and_time;
+#endif /* GSM_CFG_TIME_LOCATION || __DOXYGEN__ */
     } msg;                                      /*!< Group of different possible message contents */
 } gsm_msg_t;
 

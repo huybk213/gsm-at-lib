@@ -978,3 +978,168 @@ gsmi_parse_ipd(const char* str) {
 }
 
 #endif /* GSM_CFG_CONN */
+
+#if GSM_CFG_TIME_LOCATION
+/**
+ * \brief           Parse Time data  or Location statements
+ * \param[in]       str: Input string
+ * \return          `1` on success, `0` otherwise
+ */
+uint8_t
+gsmi_parse_cipgsmloc(const char* str) {
+
+    if (*str == '+') {
+        str += 12;      // strlen("+CIPGSMLOC: ")
+    }
+    //
+    // 0,0.000000,0.000000,2020/03/07,09:03:53
+    // 0,2020/03/07,09:06:03
+
+    /*
+        SIM800: 0 success
+        404 Not FoundSmart Machine Smart Decision
+        408 Request Time - out
+        601 Network Error
+        602 No memory
+        603 DNS Error
+        604 Stack Busy
+        65535 Other Error
+    */
+
+
+    char special = ',';
+    uint32_t i = 0;
+    uint32_t mode = 0;
+    gsm_msg_t* tmp_msg = (gsm_msg_t*)gsm.msg->evt_arg;
+
+    gsm.msg->res = gsmOK;
+
+    for (i = 0; i < strlen(str); i++)
+    {
+        if (*(str + i) == ',')
+        {
+            mode++;
+        }
+    }
+    if (mode == 0) {
+        char tmp_code[8];
+        memset(tmp_code, 0, sizeof(tmp_code));
+        memcpy(tmp_code, str, strlen(str) - CRLF_LEN);
+        tmp_msg->msg.location_and_time.err_code = atoi(tmp_code);
+        tmp_msg->res = gsmERR;
+        return 0;
+    }
+
+    const char* p = str;
+    while (*p && *p++ != ',');
+
+    char buffer[16];
+
+    if (mode == 4) { // View only time
+        for (i = 0; i < sizeof(buffer); i++) {
+            if (*p != ',') {
+                buffer[i] = *p;
+                p++;
+            }
+            else
+                break;
+        }
+        buffer[i] = 0;
+        p++;
+
+        sprintf(tmp_msg->msg.location_and_time.location.longitude, "%s", buffer);
+
+        for (i = 0; i < sizeof(buffer); i++) {
+            if (*p != ',') {
+                buffer[i] = *p;
+                p++;
+            }
+            else
+                break;
+        }
+        buffer[i] = 0;
+        p++;
+        sprintf(tmp_msg->msg.location_and_time.location.latitude, "%s", buffer);
+    }
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p != '/') {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.year = atoi(buffer);
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p != '/') {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.month = atoi(buffer);
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p != ',') {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.date = atoi(buffer);
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p != ':') {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.hours = atoi(buffer);
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p != ':') {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.minutes = atoi(buffer);
+
+    for (i = 0; i < sizeof(buffer); i++) {
+        if (*p) {
+            buffer[i] = *p;
+            p++;
+        }
+        else
+            break;
+    }
+    buffer[i] = 0;
+    p++;
+
+    tmp_msg->msg.location_and_time.date_time.seconds = atoi(buffer);
+
+    return 1;
+}
+#endif /* GSM_CFG_TIME_LOCATION */

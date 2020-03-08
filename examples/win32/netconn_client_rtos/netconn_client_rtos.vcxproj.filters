@@ -142,6 +142,12 @@
     <ClCompile Include="..\..\..\gsm_app\vsm_debug.c">
       <Filter>gsm_app</Filter>
     </ClCompile>
+    <ClCompile Include="gsm_bearer.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
+    <ClCompile Include="gsm_location_time.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h" />
@@ -156,6 +162,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\gsm_app\vsm_debug.h">
       <Filter>gsm_app</Filter>
+    </ClInclude>
+    <ClInclude Include="gsm_location.h">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClInclude>
+    <ClInclude Include="gsm_bearer.h">
+      <Filter>Source Files\GSM CORE</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
