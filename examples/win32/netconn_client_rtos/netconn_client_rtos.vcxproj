@@ -73,7 +73,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\huytv\Desktop\gsm-at-lib\gsm_app;C:\Users\huytv\Desktop\gsm-at-lib\gsm_shell;C:\Users\huytv\Desktop\gsm-at-lib\examples\win32\netconn_client_rtos;.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\huytv\Desktop\gsm-at-lib\examples\win32\netconn_client_rtos;C:\Users\huytv\Desktop\gsm-at-lib\gsm_app;C:\Users\huytv\Desktop\gsm-at-lib\gsm_shell;.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <IncludePath>.;..\..\..\gsm_at_lib\src\include;..\..\..\gsm_at_lib\src\include\system\port\win32;..\..\..\snippets\include;$(IncludePath)</IncludePath>
@@ -92,7 +92,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;MODULE_SIM_SUPPORT_NATIVE_HTTP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,7 +144,11 @@
     <ClCompile Include="..\..\..\gsm_app\vsm_debug.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\api\gsm_netconn.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\api\gsm_network_api.c" />
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client.c" />
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client_api.c" />
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client_evt.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm.c" />
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_bearer.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_buff.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_call.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_conn.c" />
@@ -155,6 +159,7 @@
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_http.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_input.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_int.c" />
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_location_time.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_mem.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_network.c" />
     <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_operator.c" />
@@ -174,11 +179,10 @@
     <ClCompile Include="..\..\..\gsm_shell\app_cli.c" />
     <ClCompile Include="..\..\..\gsm_shell\vsm_shell.c" />
     <ClCompile Include="..\..\..\snippets\call_sms.c" />
+    <ClCompile Include="..\..\..\snippets\mqtt_client_api.c" />
     <ClCompile Include="..\..\..\snippets\netconn_client.c" />
     <ClCompile Include="..\..\..\snippets\network_utils.c" />
     <ClCompile Include="..\..\..\snippets\sim_manager.c" />
-    <ClCompile Include="gsm_bearer.c" />
-    <ClCompile Include="gsm_location_time.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
@@ -187,8 +191,6 @@
     <ClInclude Include="..\..\..\gsm_app\vsm_debug.h" />
     <ClInclude Include="..\..\..\gsm_shell\app_cli.h" />
     <ClInclude Include="..\..\..\gsm_shell\vsm_shell.h" />
-    <ClInclude Include="gsm_bearer.h" />
-    <ClInclude Include="gsm_location.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

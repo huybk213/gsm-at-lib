@@ -46,8 +46,9 @@
 #include "network_utils.h"
 #include "gsm_app.h"
 #include "call_sms.h"
-#include "gsm_bearer.h"
-#include "gsm_location_time.h"
+#include "gsm/gsm_bearer.h"
+#include "gsm/gsm_location_time.h"
+#include "mqtt_client_api.h"
 
 static void vsm_cli_main_loop(void* pvParameters);
 static int32_t cli_connect_to_server(p_shell_context_t context, int32_t argc, char **argv);
@@ -60,6 +61,8 @@ static int32_t cli_call(p_shell_context_t context, int32_t argc, char** argv);
 static int32_t cli_config_sim(p_shell_context_t context, int32_t argc, char** argv);
 static int32_t cli_bearer_open(p_shell_context_t context, int32_t argc, char** argv);
 static int32_t cli_location_time_get(p_shell_context_t context, int32_t argc, char** argv);
+static int32_t cli_time_get(p_shell_context_t context, int32_t argc, char** argv);
+static int32_t cli_test_mqtt(p_shell_context_t context, int32_t argc, char** argv);
 
 static const shell_command_context_t cli_command_table[] = 
 {
@@ -72,7 +75,9 @@ static const shell_command_context_t cli_command_table[] =
     {"call",       "\tcall: Call to specific number\r\n",       cli_call,   1},
     {"configsim",       "\tconfigsim: Config sim card\r\n",       cli_config_sim,   0},
     {"bearer",       "\tbearer (open-close-get): Bearer settings for applications based on IP\r\n",       cli_bearer_open,   1},
-    {"timeloc",       "\ttimeloc: Get location and time\r\n",       cli_location_time_get,   0}
+    {"loctime",       "\ttimeloc: Get location and time\r\n",       cli_location_time_get,   0},
+    {"time",       "\ttime: Get Time\r\n",       cli_time_get,   0},
+    {"mqtt",       "\tmqtt: Test mqtt\r\n",       cli_test_mqtt,   0}
 };
 
 
@@ -184,14 +189,14 @@ static int32_t cli_config_sim(p_shell_context_t context, int32_t argc, char** ar
 
 static int32_t cli_bearer_open(p_shell_context_t context, int32_t argc, char** argv)
 {
-    if(strcmp(argv[1], "open") == 0)
-        gsm_bearer_open(NULL, NULL, 1);
-    else if (strcmp(argv[1], "close") == 0){
+    //if(strcmp(argv[1], "open") == 0)
+    //    gsm_bearer_open(NULL, NULL, 1);
+    //else if (strcmp(argv[1], "close") == 0){
+    //    gsm_bearer_open(NULL, NULL, 1);
+    //}
+    //else if (strcmp(argv[1], "get") == 0) {
 
-    }
-    else if (strcmp(argv[1], "get") == 0) {
-
-    }
+    //}
     return 1;
 }
 
@@ -230,5 +235,32 @@ static int32_t cli_location_time_get(p_shell_context_t context, int32_t argc, ch
 
     gsm_location_time_get(location_and_time_evt, &arg, 1);
 
+    return 1;
+}
+
+static int32_t cli_time_get(p_shell_context_t context, int32_t argc, char** argv)
+{
+    gsm_datetime_t time;
+    gsm_app_get_time(&time);
+    printf("%d/%02d/%02d %02d:%02d:%02d\r\n", 
+        time.year, 
+        time.month, 
+        time.date, 
+        time.hours, 
+        time.minutes, 
+        time.seconds);
+    //printf("Time %d/%02d/%02d %d:%02d:%02\r\n",
+    //        time.year,
+    //        time.month,
+    //        time.date,
+    //        time.hours,
+    //        time.minutes,
+    //        time.seconds);
+    return 1;
+}
+
+static int32_t cli_test_mqtt(p_shell_context_t context, int32_t argc, char** argv)
+{
+    gsm_sys_thread_create(NULL, "mqtt_thread", (gsm_sys_thread_t)mqtt_client_api_thread, NULL, GSM_SYS_THREAD_SS, GSM_SYS_THREAD_PRIO);
     return 1;
 }

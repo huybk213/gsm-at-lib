@@ -254,8 +254,13 @@ typedef enum {
     GSM_CMD_SAPBR,                              /*!< Bearer for Applications Based on IP */
     GSM_CMD_SAPBR_SET,                          /*!< Bearer Write Settings for Applications Based on IP */
     GSM_CMD_SAPBR_OPEN,                         /*!< Bearer Open for Applications Based on IP */
+    GSM_CMD_SAPBR_CLOSE,                        /*!< Bearer Close for Applications Based on IP */
+    GSM_CMD_SAPBR_QUERY,                        /*!< Bearer Query for Applications Based on IP */
+    GSM_CMD_SAPBR_GET,                          /*!< Bearer Get for Applications Based on IP */
 
-    GSM_CMD_LOCATION_TIME_GET,                       /*!< Location and time service */
+    GSM_CMD_LOCATION_TIME_GET,                  /*!< Location and time service */
+    GSM_CMD_TIME_GET,                           /*!< Time service */
+
     GSM_CMD_END,                                /*!< Last CMD entry */
 } gsm_cmd_t;
 
@@ -524,7 +529,7 @@ typedef struct gsm_msg {
         struct {
             char* tag;
             char* tag_value;
-            uint8_t cmd_type;
+            //uint8_t cmd_type;
             uint8_t cid;
         } bearer_param;
 #endif /* GSM_CFG_NETWORK || __DOXYGEN__ */

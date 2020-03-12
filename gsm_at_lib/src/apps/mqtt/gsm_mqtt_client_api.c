@@ -33,6 +33,7 @@
  */
 #include "gsm/apps/gsm_mqtt_client_api.h"
 #include "gsm/gsm_mem.h"
+#include "stdafx.h"
 
 /* Tracing debug message */
 #define GSM_CFG_DBG_MQTT_API_TRACE              (GSM_CFG_DBG_MQTT_API | GSM_DBG_TYPE_TRACE)

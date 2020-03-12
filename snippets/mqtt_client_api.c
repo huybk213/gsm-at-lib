@@ -10,24 +10,26 @@
  * test.mosquitto.org server and subscribe to publishing topic
  */
 
+#include "stdafx.h"
 #include "gsm/apps/gsm_mqtt_client_api.h"
 #include "mqtt_client_api.h"
 #include "gsm/gsm_mem.h"
 #include "gsm/gsm_network_api.h"
+
 
 /**
  * \brief           Connection information for MQTT CONNECT packet
  */
 static const gsm_mqtt_client_info_t
 mqtt_client_info = {
-    .keep_alive = 10,
+    .keep_alive = 30,
 
     /* Server login data */
-    .user = "8a215f70-a644-11e8-ac49-e932ed599553",
-    .pass = "26aa943f702e5e780f015cd048a91e8fb54cca28",
+    .user = "",
+    .pass = "",
 
     /* Device identifier address */
-    .id = "2c3573a0-0176-11e9-a056-c5cffe7f75f9",
+    .id = "HuyTV",
 };
 
 /**
@@ -56,7 +58,7 @@ mqtt_client_api_thread(void const* arg) {
     gsm_mqtt_conn_status_t conn_status;
     gsm_mqtt_client_api_buf_p buf;
     gsmr_t res;
-    char random_str[10];
+    char random_str[10] = {"1234"};
 
     /* Request network attach */
     while (gsm_network_request_attach() != gsmOK) {
@@ -74,7 +76,7 @@ mqtt_client_api_thread(void const* arg) {
         printf("Joining MQTT server\r\n");
 
         /* Try to join */
-        conn_status = gsm_mqtt_client_api_connect(client, "mqtt.mydevices.com", 1883, &mqtt_client_info);
+        conn_status = gsm_mqtt_client_api_connect(client, "broker.hivemq.com", 1883, &mqtt_client_info);
         if (conn_status == GSM_MQTT_CONN_STATUS_ACCEPTED) {
             printf("Connected and accepted!\r\n");
             printf("Client is ready to subscribe and publish to new messages\r\n");
@@ -85,7 +87,7 @@ mqtt_client_api_thread(void const* arg) {
         }
 
         /* Subscribe to topics */
-        sprintf(mqtt_topic_str, "v1/%s/things/%s/cmd/#", mqtt_client_info.user, mqtt_client_info.id);
+        sprintf(mqtt_topic_str, "%s", "HuyTV/123");
         if (gsm_mqtt_client_api_subscribe(client, mqtt_topic_str, GSM_MQTT_QOS_AT_LEAST_ONCE) == gsmOK) {
             printf("Subscribed to topic\r\n");
         } else {
@@ -106,12 +108,12 @@ mqtt_client_api_thread(void const* arg) {
                 printf("MQTT connection closed!\r\n");
                 break;
             } else if (res == gsmTIMEOUT) {
-                printf("Timeout on MQTT receive function. Manually publishing.\r\n");
+                //printf("Timeout on MQTT receive function. Manually publishing.\r\n");
 
                 /* Publish data on channel 1 */
-                generate_random(random_str);
-                sprintf(mqtt_topic_str, "v1/%s/things/%s/data/1", mqtt_client_info.user, mqtt_client_info.id);
-                gsm_mqtt_client_api_publish(client, mqtt_topic_str, random_str, strlen(random_str), GSM_MQTT_QOS_AT_LEAST_ONCE, 0);
+                //generate_random(random_str);
+                sprintf(mqtt_topic_str, "%s", "HuyTV/456");
+                gsm_mqtt_client_api_publish(client, mqtt_topic_str, "Hihi", strlen("Hihi"), GSM_MQTT_QOS_AT_LEAST_ONCE, 0);
             }
         }
         goto terminate;

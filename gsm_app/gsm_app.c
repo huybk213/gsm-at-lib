@@ -2,6 +2,8 @@
 #include "gsm_app.h"
 #include "stdbool.h"
 #include "vsm_debug.h"
+#include "gsm/gsm_bearer.h"
+#include "gsm/gsm_location_time.h"
 
 #define HEADER_BAK_LEN 32
 #define HTTP_READ_BUFFER_SIZE 1024
@@ -252,7 +254,7 @@ static int _parse_http_response(uint8_t* response, uint32_t response_len, http_r
     resource /cmd.txt
 */
 
-static bool parse_ota_url(char* url, char* server, char* resource, uint32_t* port)
+static bool gsm_parse_http_url(char* url, char* server, char* resource, uint32_t* port)
 {
 #define VSM_HTTPCLIENT_MAX_CONNECT_URL 128      // only for dev
 #define VSM_HTTPCLIENT_MAX_FILE_LEN 128 // only for dev
@@ -316,7 +318,11 @@ static bool parse_ota_url(char* url, char* server, char* resource, uint32_t* por
     return 0;
 }
 
-
+/**
+ * \brief           Downlading file via HTTP
+ * \param[in]       url: file url
+ * \return          \ref gsmOK on success, member of \ref gsmr_t otherwise
+ */
 gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported 
 {
     if (url == NULL || strlen(url) == 0)
@@ -343,7 +349,7 @@ gsmr_t gsm_app_connect_to_http_server(char* url)  // ssl not supported
     //gsm_sys_sem_t* sem = (void*)arg; 
     gsm_sys_sem_t* sem = NULL;
 
-    if (parse_ota_url(url, domain, resource, &port) == 0)
+    if (gsm_parse_http_url(url, domain, resource, &port) == 0)
     {
         printf("Parse connect url %s err\r\n", url);
         return gsmERR;
@@ -614,5 +620,64 @@ http_exit:
     {
         gsm_sys_sem_release(sem);
     }
+    return res;
+}
+
+//static void _location_and_time_evt(gsmr_t res, void* arg)
+//{
+//    gsm_msg_t* evt = (gsm_msg_t*)arg;
+//    if (evt->res == gsmOK)
+//    {
+//        printf("Time %d/%02d/%02d %d:%02d:%02d\r\nLongitude %s\r\nLatiude %s\r\n",
+//            evt->msg.location_and_time.date_time.year,
+//            evt->msg.location_and_time.date_time.month,
+//            evt->msg.location_and_time.date_time.date,
+//            evt->msg.location_and_time.date_time.hours,
+//            evt->msg.location_and_time.date_time.minutes,
+//            evt->msg.location_and_time.date_time.seconds,
+//            evt->msg.location_and_time.location.longitude,
+//            evt->msg.location_and_time.location.latitude
+//        );
+//    }
+//    else
+//    {
+//        printf("Get location and time error %d\r\n", evt->msg.location_and_time.err_code);
+//    }
+//}
+
+/**
+ * \brief           Get current date and time over gsm
+ * \param[in]       time: time variable
+ * \return          \ref gsmOK on success, member of \ref gsmr_t otherwise
+ */
+gsmr_t gsm_app_get_time(gsm_datetime_t* time)
+{
+    if (time == NULL)
+    {
+        return 0;
+    }
+
+    gsmr_t res = gsmERR;
+    res = gsm_bearer_open(NULL, NULL, 1, 1);
+    
+    //if(res != gsmOK)
+    //{
+    //    printf("gsm_bearer_open error\r\n");
+    //    goto exit;
+    //}
+
+    gsm_msg_t gsm_msg;
+    memset(&gsm_msg, 0, sizeof(gsm_msg_t));
+    res = gsm_location_time_get(NULL, &gsm_msg, 1);
+    if (res != gsmOK || gsm_msg.msg.location_and_time.err_code != 0)
+    {
+        printf("gsm_location_time_get error code %d\r\n", gsm_msg.msg.location_and_time.err_code);
+        goto exit;
+    }
+
+    memcpy(time, &gsm_msg.msg.location_and_time.date_time, sizeof(gsm_datetime_t));
+    res = gsmOK;
+
+    exit:
     return res;
 }

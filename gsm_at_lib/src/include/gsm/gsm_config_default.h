@@ -167,7 +167,7 @@
  *                  reset sequence to GSM device.
  */
 #ifndef GSM_CFG_RESET_ON_INIT
-#define GSM_CFG_RESET_ON_INIT               1
+#define GSM_CFG_RESET_ON_INIT               0
 #endif
 
 /**

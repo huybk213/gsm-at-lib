@@ -105,8 +105,8 @@ main(void) {
 
     // HuyTV
     /* Start call and sms func */
-    printf("Start call and sms function\r\n");
-    call_sms_start();
+    //printf("Start call and sms function\r\n");
+    //call_sms_start();
 
     /* Get money */
     //char money_response[128];

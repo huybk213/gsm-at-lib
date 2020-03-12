@@ -32,4 +32,4 @@
  * Version:         $_version_$
  */
 #include "gsm/apps/gsm_mqtt_client_evt.h"
-
+#include "stdafx.h"

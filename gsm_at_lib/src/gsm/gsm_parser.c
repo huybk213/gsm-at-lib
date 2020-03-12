@@ -1035,7 +1035,9 @@ gsmi_parse_cipgsmloc(const char* str) {
 
     char buffer[16];
 
-    if (mode == 4) { // View only time
+    if (mode == 4) {
+
+        // Get longitude
         for (i = 0; i < sizeof(buffer); i++) {
             if (*p != ',') {
                 buffer[i] = *p;
@@ -1047,8 +1049,9 @@ gsmi_parse_cipgsmloc(const char* str) {
         buffer[i] = 0;
         p++;
 
-        sprintf(tmp_msg->msg.location_and_time.location.longitude, "%s", buffer);
+        if(tmp_msg->msg.location_and_time.location.longitude) sprintf(tmp_msg->msg.location_and_time.location.longitude, "%s", buffer);
 
+        // Get latitude
         for (i = 0; i < sizeof(buffer); i++) {
             if (*p != ',') {
                 buffer[i] = *p;
@@ -1059,7 +1062,7 @@ gsmi_parse_cipgsmloc(const char* str) {
         }
         buffer[i] = 0;
         p++;
-        sprintf(tmp_msg->msg.location_and_time.location.latitude, "%s", buffer);
+        if (tmp_msg->msg.location_and_time.location.latitude) sprintf(tmp_msg->msg.location_and_time.location.latitude, "%s", buffer);
     }
 
     for (i = 0; i < sizeof(buffer); i++) {
@@ -1143,3 +1146,16 @@ gsmi_parse_cipgsmloc(const char* str) {
     return 1;
 }
 #endif /* GSM_CFG_TIME_LOCATION */
+
+#if GSM_CFG_BEARER
+/**
+ * \brief           Parse SAPBR close message
+ * \param[in]       str: Input string
+ * \return          `1` on success, `0` otherwise
+ */
+uint8_t
+gsmi_parse_sapbr_close_msg(const char* str) {
+
+}
+
+#endif /* GSM_CFG_BEARER */

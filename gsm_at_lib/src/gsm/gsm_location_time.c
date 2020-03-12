@@ -1,4 +1,4 @@
-#include "gsm_location_time.h"
+#include "gsm/gsm_location_time.h"
 #include "gsm/gsm_private.h"
 #include "gsm/gsm_mem.h"
 #include "stdafx.h"

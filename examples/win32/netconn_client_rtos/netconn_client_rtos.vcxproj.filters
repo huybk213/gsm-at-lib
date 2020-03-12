@@ -58,9 +58,6 @@
     <ClCompile Include="..\..\..\GSM_AT_Lib\src\gsm\gsm_input.c">
       <Filter>Source Files\GSM CORE</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\GSM_AT_Lib\src\gsm\gsm_int.c">
-      <Filter>Source Files\GSM CORE</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\GSM_AT_Lib\src\gsm\gsm_mem.c">
       <Filter>Source Files\GSM CORE</Filter>
     </ClCompile>
@@ -142,10 +139,25 @@
     <ClCompile Include="..\..\..\gsm_app\vsm_debug.c">
       <Filter>gsm_app</Filter>
     </ClCompile>
-    <ClCompile Include="gsm_bearer.c">
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_bearer.c">
       <Filter>Source Files\GSM CORE</Filter>
     </ClCompile>
-    <ClCompile Include="gsm_location_time.c">
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_location_time.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_at_lib\src\gsm\gsm_int.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\snippets\mqtt_client_api.c">
+      <Filter>Source Files\GSM SNIPPETS</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client_api.c">
+      <Filter>Source Files\GSM CORE</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\gsm_at_lib\src\apps\mqtt\gsm_mqtt_client_evt.c">
       <Filter>Source Files\GSM CORE</Filter>
     </ClCompile>
   </ItemGroup>
@@ -162,12 +174,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\gsm_app\vsm_debug.h">
       <Filter>gsm_app</Filter>
-    </ClInclude>
-    <ClInclude Include="gsm_location.h">
-      <Filter>Source Files\GSM CORE</Filter>
-    </ClInclude>
-    <ClInclude Include="gsm_bearer.h">
-      <Filter>Source Files\GSM CORE</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -34,7 +34,7 @@
 #include "gsm/apps/gsm_mqtt_client.h"
 #include "gsm/gsm_mem.h"
 #include "gsm/gsm_pbuf.h"
-
+#include "stdafx.h"
 /**
  * \brief           MQTT client connection
  */

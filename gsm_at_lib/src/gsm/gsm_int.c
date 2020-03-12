@@ -581,7 +581,7 @@ gsmi_tcpip_process_data_sent(uint8_t sent) {
  */
 void
 gsmi_process_cipsend_response(gsm_recv_t* rcv, uint8_t* is_ok, uint16_t* is_error) {
-    printf("Func %s\r\n", __func__);
+    //printf("Func %s\r\n", __func__);
     if (gsm.msg->msg.conn_send.wait_send_ok_err) {
         if (GSM_CHARISNUM(rcv->data[0]) && rcv->data[1] == ',') {
             uint8_t num = GSM_CHARTONUM(rcv->data[0]);
@@ -784,7 +784,6 @@ gsmi_parse_received(gsm_recv_t* rcv) {
 
 #if GSM_CFG_TIME_LOCATION
         }
-
         else if (CMD_IS_CUR(GSM_CMD_LOCATION_TIME_GET) && !strncmp(rcv->data, "+CIPGSMLOC: ", 11)) {
             if (gsmi_parse_cipgsmloc(rcv->data)) {
                 printf("gsmi_parse_cipgsmloc success\r\n");
@@ -795,6 +794,36 @@ gsmi_parse_received(gsm_recv_t* rcv) {
                 is_error = 1;
             }             
 #endif /* GSM_CFG_TIME_LOCATION */
+#if GSM_CFG_BEARER
+        }
+        else if (CMD_IS_CUR(GSM_CMD_SAPBR) && !strncmp(rcv->data, "+SAPBR:", 7)) {
+            if (is_error == 0)
+            {
+                if (CMD_IS_DEF(GSM_CMD_SAPBR_SET)) {
+                    printf("Parse GSM_CMD_SAPBR_SET\r\n");
+                }
+                else if (CMD_IS_DEF(GSM_CMD_SAPBR_OPEN)) {
+                    printf("Parse GSM_CMD_SAPBR_OPEN\r\n");
+                }
+                else if (CMD_IS_DEF(GSM_CMD_SAPBR_CLOSE)) {
+                    printf("Parse GSM_CMD_SAPBR_CLOSE\r\n");
+                }
+                else if (CMD_IS_DEF(GSM_CMD_SAPBR_QUERY)) {
+                    printf("Parse GSM_CMD_SAPBR_QUERY\r\n");
+                }
+            }
+            //else if (CMD_IS_DEF(GSM_CMD_SAPBR_GET)) {
+            //    printf("Parse GSM_CMD_SAPBR_GET\r\n");
+            //}
+            //if (gsmi_parse_cipgsmloc(rcv->data)) {
+            //    printf("gsmi_parse_cipgsmloc success\r\n");
+            //    is_ok = 1;
+            //}
+            //else {
+            //    printf("gsmi_parse_cipgsmloc error\r\n");
+            //    is_error = 1;
+            //}
+#endif /* GSM_CFG_BEARER */
         }
 
     /* Messages not starting with '+' sign */
@@ -1707,7 +1736,6 @@ gsmr_t
 gsmi_initiate_cmd(gsm_msg_t* msg) {
     switch (CMD_GET_CUR()) {                    /* Check current message we want to send over AT */
         case GSM_CMD_RESET: {                   /* Reset modem with AT commands */
-            printf("HuyTV : GSM_CMD_RESET\r\n");
             /* Try with hardware reset */
             if (gsm.ll.reset_fn != NULL && gsm.ll.reset_fn(1)) {
                 gsm_delay(2);
@@ -2278,15 +2306,34 @@ gsmi_initiate_cmd(gsm_msg_t* msg) {
         {
             AT_PORT_SEND_BEGIN_AT();
             AT_PORT_SEND_CONST_STR("+SAPBR=");
-            gsmi_send_number(msg->msg.bearer_param.cmd_type, 0, 0);
-            gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);
             if (CMD_IS_DEF(GSM_CMD_SAPBR_SET)) {
                 printf("GSM_CMD_SAPBR_SET\r\n");
+                gsmi_send_number(3, 0, 0);          // cmd type
+                gsmi_send_number(1, 0, 1);          // cid
                 gsmi_send_string(msg->msg.bearer_param.tag, 1, 1, 1);
                 gsmi_send_string(msg->msg.bearer_param.tag_value, 1, 1, 1);
             }
             else if(CMD_IS_DEF(GSM_CMD_SAPBR_OPEN)) {
+                printf("GSM_CMD_SAPBR_OPEN\r\n");
+                gsmi_send_number(1, 0, 0);      // cmd type
+                gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);      // cid
             }
+            else if (CMD_IS_DEF(GSM_CMD_SAPBR_CLOSE)) {
+                printf("GSM_CMD_SAPBR_CLOSE\r\n");
+                gsmi_send_number(0, 0, 0);
+                gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);
+            }
+            else if (CMD_IS_DEF(GSM_CMD_SAPBR_QUERY)) {
+                printf("GSM_CMD_SAPBR_QUERY\r\n");
+                gsmi_send_number(2, 0, 0);
+                gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);
+            }
+            else if (CMD_IS_DEF(GSM_CMD_SAPBR_GET)) {
+                printf("GSM_CMD_SAPBR_GET\r\n");
+                gsmi_send_number(4, 0, 0);
+                gsmi_send_number(msg->msg.bearer_param.cid, 0, 1);
+            }
+            
             AT_PORT_SEND_END_AT();
             break;
         }
